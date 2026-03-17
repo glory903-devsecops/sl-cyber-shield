@@ -11,7 +11,7 @@ Steps:
             [A] curl via host.docker.internal
             [B] fallback: docker cp
     STEP 5. Verify health_check.jsp
-    STEP 6. Unit tests
+    STEP 6. Threat Demonstration (Post-Exploitation)
 """
 
 import urllib.request

