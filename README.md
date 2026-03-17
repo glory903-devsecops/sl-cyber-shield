@@ -448,30 +448,6 @@ curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=env"
 
 ---
 
-### 🧪 7. `test_stage1_dropper.py` — 유닛 테스트 실행
-
-**실제 서버 연결 없이 Mock 객체로 독립적으로 실행됩니다.**
-
-```bash
-# 전체 테스트 실행 (간략 출력)
-python3 -m unittest test_stage1_dropper.py
-
-# 상세 출력 모드 (-v)
-python3 -m unittest test_stage1_dropper.py -v
-
-# 특정 테스트 케이스만 실행
-python3 -m unittest test_stage1_dropper.TestExploitConfig
-python3 -m unittest test_stage1_dropper.TestSpring4ShellPayloadGenerator
-python3 -m unittest test_stage1_dropper.TestExploitController
-
-# 예상 출력
-# .......
-# ----------------------------------------------------------------------
-# Ran 7 tests in 0.012s
-# OK
-```
-
----
 
 ## 아키텍처 설계 원칙
 
@@ -586,28 +562,6 @@ curl -s "http://localhost:8011/health_check.jsp?pwd=glory&cmd=env"
 ### Step 7. HTML 결과 보고서 확인
 
 `run.py` 통합 실행기를 통해 생성된 `report_YYYYMMDD_HHMMSS.html` 파일을 브라우저로 열어, 발생한 취약점 증적 자료와 공격 단계별 요약 결과를 확인합니다.
-
----
-
-## 유닛 테스트
-
-Stage 1 Exploit 스크립트(`stage1_dropper.py`)의 각 레이어(Config, PayloadGenerator, Controller)에 대한 단위 테스트를 작성하였습니다. 실제 서버로 HTTP 요청을 보내지 않고, **Mock 객체(unittest.mock)**를 이용하여 독립적으로 검증합니다.
-
-```bash
-python3 -m unittest test_stage1_dropper.py -v
-```
-
-**테스트 시나리오:**
-
-| 테스트 | 검증 내용 |
-|--------|----------|
-| `test_config_initialization` | 타겟 URL, 파일명, 디렉터리 기본값 설정 검증 |
-| `test_generate_headers_contains_required_keys` | HTTP 헤더에 `prefix`, `suffix`, `c` 키 포함 여부 |
-| `test_generate_body_contains_classloader_modification_keys` | Data Binding 페이로드 키 정확성 |
-| `test_generate_body_contains_stager_code` | Stager JSP 코드의 `cmd` 파라미터 포함 확인 |
-| `test_run_exploit_success_on_http_200` | HTTP 200 시 성공 반환 |
-| `test_run_exploit_success_on_expected_http_error` | HTTP 4xx 에러 시에도 성공으로 간주 (Tomcat은 에러 응답에도 로그 기록) |
-| `test_run_exploit_failure_on_connection_error` | 네트워크 연결 실패 시 실패 반환 |
 
 ---
 
