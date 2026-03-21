@@ -26,16 +26,25 @@
 <summary><b>1️⃣ 기존 시나리오: 애플리케이션 취약점 연계 타격 (`run.py`)</b></summary>
 
 > **Spring4Shell 👉 TeamCity 취약점 👉 Struts2 취약점**으로 이어지는 정석적인 제로데이 체인(CVE) 공격 스크립트입니다.
+
+> [!WARNING]
+> **`01.TestServer` 폴더는 보안 및 용량 문제로 GitHub에 포함되지 않습니다.**
+> 강사님에게서 별도 제공받은 `01.TestServer` 파일을 프로젝트 루트에 배치한 뒤 아래 명령어를 실행하세요.
+
 ```bash
-# 타겟 파일(run.py)은 최상위 루트 폴더에 위치합니다. 이동 없이 바로 실행하세요.
+# 1단계: Docker 환경 실행 (01.TestServer 폴더에서)
+cd 01.TestServer && docker compose up -d && cd ..
+
+# 2단계: 타겟 파일(run.py)은 루트 폴더에 위치합니다. 이동 없이 바로 실행하세요.
 python3 run.py
 ```
 </details>
 
-<details open>
-<summary><b>2️⃣ 신규 시나리오: 인프라 설정 오류 및 횡적 이동 (`sub_run.py`)</b></summary>
 
-> 취약점을 쓰지 않고 **관리자들의 비밀번호 재사용, 방치된 터널** 등을 파고드는 실무 APT 공격 기법입니다.
+<details open>
+<summary><b>2️⃣ 신규 시나리오: 내부자 위협 시뮬레이션 (`sub_run.py`)</b></summary>
+
+> 불만을 품은 내부 직원이 **정상 업무 권한만으로** 6단계에 걸쳐 기업 기밀을 탈취하고 CI/CD 파이프라인에 백도어를 심는 공공망 공격 시나리오입니다.
 ```bash
 # 서브 시나리오는 최상위 루트 폴더에서 직접 실행합니다.
 python3 sub_run.py
@@ -106,12 +115,12 @@ CVE-2022-22965/
 
 1. **스프링 서버 공격 로그 실시간 확인**
    ```bash
-   docker logs -f cvepratice-spring-1
+   docker logs -f 01testserver-spring-1
    ```
 
 2. **웹쉘 파일 1초 주기로 감시하기**
    ```bash
-   docker exec -it cvepratice-spring-1 bash
+   docker exec -it 01testserver-spring-1 bash
    watch -n 1 ls -la /usr/local/tomcat/webapps/ROOT/
    ```
 </details>

