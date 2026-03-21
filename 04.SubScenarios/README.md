@@ -30,16 +30,11 @@
 
 ## 🚀 빠른 시작
 
-> [!WARNING]
-> **`01.TestServer` 폴더는 보안 및 용량 문제로 GitHub에 포함되지 않습니다.**
-> 강사님으로부터 별도 제공받은 `01.TestServer` 압축 파일을 이 프로젝트 루트에 해제한 뒤 아래 명령어를 실행하세요.
-
 ```bash
-# 01.TestServer를 프로젝트 루트에 배치한 뒤 Docker 환경 실행
+# 전제 조건: 01.TestServer Docker 환경 실행
 cd 01.TestServer && docker compose up -d
 
 # 루트 폴더에서 바로 실행 가능 (CD 이동 불필요)
-cd ..
 python3 sub_run.py
 ```
 
