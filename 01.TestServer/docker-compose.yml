@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  spring:
+    build:
+      context: .
+      dockerfile: web-server
+    environment:
+      SSH_PASSWORD: testtest
+    ports:
+      - "8011:8080"
+    volumes:
+      - ./spring:/usr/local/tomcat/webapps
+    platform: linux/amd64
+
+  spring-db:
+    image: mysql:5.7.44
+    environment:
+      MYSQL_ROOT_PASSWORD: testtest
+      MYSQL_DATABASE: spring_db
+      MYSQL_USER: spring_user
+      MYSQL_PASSWORD: spring_pass
+    volumes:
+      - ./spring_db:/var/lib/mysql
+    platform: linux/amd64
+
+  struts:
+    build:
+      context: .
+      dockerfile: web-server
+    environment:
+      SSH_PASSWORD: testtest
+    volumes:
+      - ./struts:/usr/local/tomcat/webapps
+    platform: linux/amd64
+
+  struts-db:
+    image: mysql:5.7.44
+    environment:
+      MYSQL_ROOT_PASSWORD: testtest
+      MYSQL_DATABASE: struts_db
+      MYSQL_USER: struts_user
+      MYSQL_PASSWORD: struts_pass
+    volumes:
+      - ./struts_db:/var/lib/mysql
+    platform: linux/amd64
+
+  gitea:
+    image: gitea/gitea:1.25-nightly
+    volumes:
+      - ./gitea:/data
+    platform: linux/amd64
+
+  teamcity-server:
+    image: jetbrains/teamcity-server:2023.11.3
+    volumes:
+      - ./teamcity_server/datadir:/data/teamcity_server/datadir
+      - ./teamcity_server/logs:/opt/teamcity/logs
+    platform: linux/amd64
+
+  teamcity-agent:
+    image: jetbrains/teamcity-agent:2023.11.3
+    environment:
+      - SERVER_URL=http://teamcity-server:8111
+      - AGENT_NAME=teamcity-agent
+    volumes:
+      - ./teamcity_agent:/data/teamcity_agent/conf
+    depends_on:
+      - teamcity-server
+    platform: linux/amd64
+
+  employee-desktop:
+    build:
+      context: .
+      dockerfile: employee-desktop
+    shm_size: 512m
+    environment:
+      VNC_PW: password
+      KASM_SVC_AUDIO: "0"
+      KASM_SVC_AUDIO_INPUT: "0"
+      SMB_HOST: nas
+      SMB_SHARE: data
+      SMB_USER: smbuser
+      SMB_PASSWORD: smbpass
+      SMB_MOUNT_DIR: /home/kasm-user/nas
+      SMB_VERSION: "3.0"
+    privileged: true
+    depends_on:
+      - nas
+      - teamcity-server
+    volumes:
+      - ./employee_data:/home/kasm-user/project
+    platform: linux/amd64
+
+  nas:
+    build:
+      context: .
+      dockerfile: nas
+    environment:
+      SMB_USER: smbuser
+      SMB_PASSWORD: smbpass
+      SMB_SHARE_NAME: data
+      SMB_READ_ONLY: no
+    volumes:
+      - ./nas_data:/data
+    platform: linux/amd64

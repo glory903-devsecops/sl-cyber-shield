@@ -1,1 +1,9 @@
 report_*.html
+*.zip
+01.TestServer/*_db/
+01.TestServer/*_data/
+01.TestServer/teamcity_server/logs/
+01.TestServer/teamcity_server/datadir/
+01.TestServer/teamcity_agent/
+01.TestServer/gitea/
+03.FinalReport/

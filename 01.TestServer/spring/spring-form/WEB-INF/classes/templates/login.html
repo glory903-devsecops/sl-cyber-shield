@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>로그인 - Spring Form</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="page">
+	<header class="header">
+		<div class="logo">Spring Form</div>
+		<nav class="nav">
+			<a th:href="@{/}">홈</a>
+			<a th:href="@{/notices}">공지사항</a>
+		</nav>
+		<div class="auth">
+			<a class="btn btn-outline" th:href="@{/signup}">회원가입</a>
+		</div>
+	</header>
+
+	<main class="content">
+		<section class="card narrow">
+			<h1>로그인</h1>
+			<p class="muted">계정 정보를 입력해 주세요.</p>
+			<div class="error" th:if="${error}" th:text="${error}"></div>
+			<form th:action="@{/login}" th:object="${loginForm}" method="post" class="form">
+				<label>
+					<span>아이디</span>
+					<input type="text" th:field="*{username}" required />
+				</label>
+				<label>
+					<span>비밀번호</span>
+					<input type="password" th:field="*{password}" required />
+				</label>
+				<button class="btn" type="submit">로그인</button>
+			</form>
+		</section>
+	</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>회원가입 - Spring Form</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="page">
+	<header class="header">
+		<div class="logo">Spring Form</div>
+		<nav class="nav">
+			<a th:href="@{/}">홈</a>
+			<a th:href="@{/notices}">공지사항</a>
+		</nav>
+		<div class="auth">
+			<a class="btn btn-outline" th:href="@{/login}">로그인</a>
+		</div>
+	</header>
+
+	<main class="content">
+		<section class="card narrow">
+			<h1>회원가입</h1>
+			<p class="muted">간단한 정보를 입력해 주세요.</p>
+			<div class="error" th:if="${error}" th:text="${error}"></div>
+			<form th:action="@{/signup}" th:object="${signupForm}" method="post" class="form">
+				<label>
+					<span>아이디</span>
+					<input type="text" th:field="*{username}" required />
+				</label>
+				<label>
+					<span>비밀번호</span>
+					<input type="password" th:field="*{password}" required />
+				</label>
+				<label>
+					<span>이름</span>
+					<input type="text" th:field="*{displayName}" required />
+				</label>
+				<button class="btn" type="submit">회원가입</button>
+			</form>
+		</section>
+	</main>
+</div>
+</body>
+</html>

@@ -1,199 +1,136 @@
-# CVE-2022-22965 · Spring4Shell 취약점 교육 실습
+<div align="center">
+  
+# 🎯 CVE-2022-22965 (Spring4Shell) <br> Advanced Attack Scenarios
 
-> **⚠️ 경고 (Warning)**  
-> 이 저장소는 **SK쉴더스 이큐스트(EQST) 교육 기관의 가이드라인**에 따른 **교육 목적의 모의해킹(Penetration Testing) 실습 코드**입니다.  
-> 모든 공격은 교육기관에서 제공한 **로컬 격리 환경(Docker)**에서만 수행되었습니다.  
-> 무단으로 허가받지 않은 시스템에 사용하는 것은 법적으로 엄격히 금지됩니다.
+![Spring](https://img.shields.io/badge/Spring_Framework-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Security](https://img.shields.io/badge/Penetration_Testing-FF4B4B?style=for-the-badge&logo=hackthebox&logoColor=white)
+
+**SK쉴더스 이큐스트(EQST) 가이드라인 기반 모의해킹 자동화 및 인프라 보안 진단 실습**
+
+---
+</div>
+
+> [!CAUTION]
+> **본 프로젝트는 철저히 교육 목적으로만 사용할 수 있습니다.**<br>
+> 제공된 모든 해킹 시나리오와 스크립트는 **로컬 격리 환경(Docker)**용으로 설계되었습니다. 타인의 권한 없는 시스템에 이를 테스트하거나 유출하는 것은 정보통신망법 등에 의거하여 엄격히 금지됩니다.
 
 ---
 
-## 🚀 원클릭 실습 가이드 (run.py)
+## 🚀 빠른 시작 가이드 (Quick Start)
 
-본 프로젝트는 복잡한 수동 명령어를 배제하고, 초보자도 한 번에 실습 결과를 확인할 수 있는 **자동 통합 스크립트(`run.py`)**를 중심 기능으로 제공합니다.
+본 프로젝트는 초보자도 원클릭으로 실습 결과를 확인하고, HTML 리포트를 받아볼 수 있는 **2가지의 자동화 스크립트**를 제공합니다.
 
-### 1. 작업 폴더 이동 및 구동 확인
+<details open>
+<summary><b>1️⃣ 기존 시나리오: 애플리케이션 취약점 연계 타격 (`run.py`)</b></summary>
+
+> **Spring4Shell 👉 TeamCity 취약점 👉 Struts2 취약점**으로 이어지는 정석적인 제로데이 체인(CVE) 공격 스크립트입니다.
 ```bash
-cd "/Users/glory1994/Library/CloudStorage/OneDrive-개인/99.Develop/CVE-2022-22965"
-docker ps | grep spring
-```
-*결과 화면에 `cvepratice-spring-1` 컨테이너가 정상 실행 중인지 확인합니다.*
+# 1. 02.AttackScripts 디렉터리로 이동
+cd 02.AttackScripts
 
-### 2. 공격 자동화 스크립트 실행
-```bash
+# 2. 공격 스크립트 실행
 python3 run.py
 ```
+</details>
 
-### 3. HTML 보고서 확인
-실행이 끝나면 현재 폴더에 자동 생성되는 `report_YYYYMMDD_HHMMSS.html` 파일을 열람하세요. 단순 취약점 공격뿐만 아니라, **데이터베이스 접속 환경 변수가 통째로 탈취되는 심각한 상황(Step 6)**을 직관적인 UI를 통해 직접 확인할 수 있습니다.
+<details open>
+<summary><b>2️⃣ 신규 시나리오: 인프라 설정 오류 및 횡적 이동 (`sub_run.py`)</b></summary>
 
----
-
-## 📑 목차
-- [취약점 개요](#취약점-개요)
-- [영향 받는 환경](#영향-받는-환경)
-- [공격 시나리오](#공격-시나리오)
-- [테스트 환경](#테스트-환경)
-- [프로젝트 구조](#프로젝트-구조)
-- [아키텍처 설계 원칙](#아키텍처-설계-원칙)
-- [run.py 내부 자동화 원리](#runpy-내부-자동화-원리)
-- [대응 방안 (Mitigation)](#대응-방안-mitigation)
-- [참고문헌](#참고문헌)
-
----
-
-## 취약점 개요
-
-**Spring4Shell(CVE-2022-22965)**은 2022년 3월 29일 공개된 **제로데이(Zero-Day) 원격 코드 실행(RCE)** 취약점입니다.
-
-Spring Framework의 **Data Binding 메커니즘** 취약점을 통해 공격자가 `ClassLoader` 속성을 외부에서 변조할 수 있으며, 이를 이용해 Tomcat의 `AccessLogValve` 속성을 조작하여 **웹 루트 디렉터리에 임의의 JSP 파일(웹쉘)을 생성**하고 원격 명령을 실행할 수 있습니다.
-
-| 항목 | 내용 |
-|------|------|
-| CVE ID | CVE-2022-22965 |
-| CVSS 점수 | 9.8 (Critical) |
-| 공격 유형 | Remote Code Execution (RCE) |
-| 취약점 원인 | Spring Data Binding + JDK 9 ClassLoader 변조 |
-| 발표일 | 2022년 3월 29일 |
-
----
-
-## 영향 받는 환경
-
-| 소프트웨어 | 취약 버전 |
-|-----------|----------|
-| Spring Framework | 5.3.0 ~ 5.3.17, 5.2.0 ~ 5.2.19 및 이전 버전 |
-| JDK | **9 이상** (핵심 조건) |
-| WAS | Apache Tomcat (Spring MVC 또는 WebFlux 사용 시) |
-
-> **핵심 조건:** JDK 9부터 도입된 `class.getModule()` API가 `ClassLoader` 외부 접근을 허용하게 되면서 취약점이 발생합니다.
-
----
-
-## 공격 시나리오
-
-```
-① 공격자 → 취약한 Spring4Shell 대상 탐색
-② 취약한 웹 앱의 Data Binding 엔드포인트 (POST /login 등)로 공격 요청 전송
-③ Tomcat AccessLogValve 속성 변조 → JSP 웹쉘 코드가 로그 파일로 기록
-④ 웹쉘이 웹 루트에 생성되어 URL로 접근 가능해짐
-⑤ 웹쉘을 통해 내부 서버에 원격 명령 실행 (RCE)
-```
-
----
-
-## 테스트 환경
-
-```
-[공격자 PC]              [피해자 컨테이너 - Docker]
-Mac (로컬)        <-->   Spring Framework 5.3.15
-                         JDK 11 (Spring Boot 내장 Tomcat)
-                         Apache Tomcat 9.0.60
-                         Port: localhost:8011
-```
-
-### Docker 컨테이너 정보
-
+> 취약점을 쓰지 않고 **관리자들의 비밀번호 재사용, 방치된 터널** 등을 파고드는 실무 APT 공격 기법입니다.
 ```bash
-# 실행 중인 취약 서버 확인
-docker ps | grep spring
-
-# 컨테이너명: cvepratice-spring-1
-# 접근 URL:   http://localhost:8011/spring-form/
+# 서브 시나리오는 최상위 루트 폴더에서 직접 실행합니다.
+python3 sub_run.py
 ```
+</details>
+
+> [!TIP]
+> 실행이 끝나면 `03.FinalReport` 폴더에 시각화된 **HTML 종합 보고서**가 자동 생성됩니다.
 
 ---
 
-## 프로젝트 구조
+## ⚔️ 공격 시나리오 철학 비교
 
-```
+본 프로젝트는 두 가지 접근 철학을 통해 내부망 횡적 이동(Lateral Movement) 시나리오 실습을 지원합니다.
+
+### 1. 소프트웨어 취약점(CVE) 연계형 시나리오 (`run.py`)
+기존 모의해킹 컨설팅에서 주로 쓰이는 방식으로, 다수의 제로데이/기타 어플리케이션 취약점을 체인으로 엮어 타겟을 장악합니다.
+
+<div align="center">
+  <img src="99.Legacy/공격시나리오1.webp" alt="공격시나리오1" width="800"/>
+</div>
+
+### 2. 인프라 설정 오류 및 크리덴셜 탈취형 (`sub_run.py` & `04.SubScenarios/`)
+실제 현업 APT 해킹 그룹들이 가장 애용하는 "Living off the Land" 방식입니다. 시스템 버그 대신 컨테이너 인프라 관리자의 사소한 설정 미스를 파고듭니다. (자세한 내용은 `04.SubScenarios/README.md` 참고)
+
+| ⚖️ 구분 | 기존(CVE) 체인 스크립트 (`run.py`) | 신규(Misconfig) 스크립트 (`sub_run.py`) |
+|------|-----------------------------------|--------------------------------------|
+| **장점** | 고객사에게 화려하고 파급력 높은 보안 위협을 기술적으로 증명할 수 있음. | 보안 장비(IPS/WAF) 탐지 확률이 극히 낮으며, 패치 여부 무관하게 동작함. |
+| **단점** | 타겟 소프트웨어(TeamCity 등) 패치 시 해킹 파이프라인이 즉각 무력화됨. | 사전에 인프라 비밀번호 규칙이나 관리자 습관에 대한 내부 정찰(Recon)이 필요함. |
+
+---
+
+## 🛠 아키텍처 및 폴더 구조
+
+```text
 CVE-2022-22965/
-├── README.md                  # 이 문서
-├── run.py                     # 🚀 [NEW] 원클릭 자동 통합 실행기 (HTML 실습 보고서 자동 생성 기능 포함)
-├── stage1_dropper.py          # Stage 1: Spring4Shell 공격 스크립트 (Stager 생성)
-├── stage2_uploader.py         # Stage 2: 완성형 웹쉘 배포 스크립트
-└── health_check.jsp           # Stage 2: Clean Architecture 기반 웹쉘
+├── README.md                  # 🌟 메인 가이드 (이 문서)
+├── run.py                     # 🚀 원클릭 자동 통합 실행기 (CVE 연계형)
+├── sub_run.py                 # 🚀 신규 서브 시나리오 실행기 (Misconfig형)
+│
+├── 01.TestServer/             # 🐳 테스트용 취약 서버 환경 (Docker Compose)
+│
+├── 02.AttackScripts/          # ⚙️ 세부 공격 모듈 레이어 (Clean Architecture)
+│   ├── stage1_dropper.py      # [SRP] Spring4Shell 페이로드 전송
+│   ├── stage2_uploader.py     # [SRP] 웹쉘 배포 자동화
+│   ├── stage3_lateral_movement.py # [SRP] 횡적 이동(Lateral Movement) 타격 로직
+│   └── health_check.jsp       # 유지보수성을 극대화한 클린 아키텍처 웹쉘
+│
+├── 03.FinalReport/            # 📊 실습 결과 자동 생성 HTML 보고서 폴더
+│
+├── 04.SubScenarios/           # 🔥 신규 인프라 설정 취약점 시나리오 가이드
+│
+└── 99.Legacy/                 # 🕰️ 이전 버전 참고용 팀장님 레거시 코드
 ```
 
----
-
-
-
-
-## 아키텍처 설계 원칙
-
-본 실습 코드는 실무 모의해킹 담당자가 작성하는 코드를 가정하여, 모든 파일에 **SOLID 원칙**과 **Clean Architecture(클린 아키텍처)**를 적용하였습니다.
-
-### SOLID 적용 내역
-
-| 원칙 | 적용 내용 |
-|------|----------|
-| **SRP** (단일 책임) | `ExploitConfig`, `PayloadGenerator`, `ExploitController`를 각각 분리 |
-| **OCP** (개방-폐쇄) | `PayloadGeneratorPort` 인터페이스로 새 페이로드 유형 추가 시 기존 코드 수정 불필요 |
-| **LSP** (리스코프 치환) | `Spring4ShellPayloadGenerator`가 `PayloadGeneratorPort`를 완전히 대체 가능 |
-| **ISP** (인터페이스 분리) | `CommandExecutorPort`, `FileServerPort` 등 최소 책임의 인터페이스로 분리 |
-| **DIP** (의존성 역전) | 상위 모듈(`ExploitController`)이 구체 클래스가 아닌 추상 인터페이스에 의존 |
-
-### Clean Architecture 레이어 구조
-
-```
-┌─────────────────────────────────────────┐
-│  Frameworks & Drivers (Infrastructure)  │
-│  SystemCommandAdapter, LocalFileServer  │
-├─────────────────────────────────────────┤
-│  Interface Adapters (Controllers)       │
-│  ExploitController, Stage2Uploader      │
-├─────────────────────────────────────────┤
-│  Use Cases (Application Logic)          │
-│  WebShellUseCase, Stage2UploadUseCase   │
-├─────────────────────────────────────────┤
-│  Entities (Core Domain)                 │
-│  ExploitConfig, CommandResult           │
-└─────────────────────────────────────────┘
-```
+> [!NOTE]
+> **SOLID 및 Clean Architecture 적용** <br>
+> 실무 모의해킹 담당자가 작성하는 코드를 가정하여, 파이썬 공격 스크립트는 `Controller`, `UseCase`, `Port`, `Adapter` 계층으로 완전히 분리 설계되었습니다.
 
 ---
 
-## run.py 내부 자동화 원리 (Step 1 ~ 6)
+## 🖥️ 심화 정보: CLI 실시간 모니터링
 
-`run.py` 실행 한 번으로 아래의 6개 해킹 공격 및 탈취 과정이 내부적으로 완벽하게 시뮬레이션됩니다.
+자동화 스크립트 실행 중 서버 내부에서 어떤 해킹 트래픽이 발생하고 웹쉘이 어떻게 생성되는지 터미널로 실시간 모니터링 할 수 있습니다.
 
-**Step 1. Stage 1 페이로드 전송**
-- 타겟 서버의 `ClassLoader`를 변조하여 외부 코드 실행 지시를 내리는 악의적인 Spring Data Binding 페이로드를 조작해 전송합니다.
+<details>
+<summary><b>👀 모니터링 명령어 열기/닫기</b></summary>
 
-**Step 2. Tomcat 로그 Flush 유도**
-- 공격 내용이 물리적 디스크(webapps/ROOT/yaho4.jsp)에 실제 웹쉘 파일 형태로 떨어질 수 있도록 Tomcat 로그 기록을 인위적으로 발생시킵니다.
+1. **스프링 서버 공격 로그 실시간 확인**
+   ```bash
+   docker logs -f cvepratice-spring-1
+   ```
 
-**Step 3. Stage 1 쉘 (Stager) 검증**
-- 서버에 생성된 기초 웹쉘(`yaho4.jsp`)에 접속하여 `whoami` 명령을 실행하고 최고 권한(`root`) 획득 여부를 검증합니다.
-
-**Step 4. 완성형 Stage 2 웹쉘 배포**
-- 1단계 웹쉘을 거점으로 삼아, 더욱 복잡하고 강력한 행위가 가능한 자체 제작 완성형 웹쉘(`health_check.jsp`)을 서버 네트워크 내부로 자동 다운로드(curl) 또는 복사(docker cp) 배포합니다.
-
-**Step 5. 최종 제어권 획득 검증**
-- `health_check.jsp`를 통해 최종적으로 서버에 권한(`uid=0`)을 행사할 수 있는지 응답값을 확인합니다.
-
-**Step 6. 보너스: 데이터베이스 위협 증명 시뮬레이션**
-- 개발자와 보안 담당자가 취약점에 대한 위기 의식을 체감할 수 있도록, 해커가 DB 접속 암호를 쉽게 탈취해 갈 수 있는 주요 인프라 **환경변수(`env`)** 목록 전체와 핵심 애플리케이션 **설정 폴더 리스트(`ls -la`)**를 원격으로 강제 덤프(Dump)합니다.
+2. **웹쉘 파일 1초 주기로 감시하기**
+   ```bash
+   docker exec -it cvepratice-spring-1 bash
+   watch -n 1 ls -la /usr/local/tomcat/webapps/ROOT/
+   ```
+</details>
 
 ---
 
-## 대응 방안 (Mitigation)
+## 🛡️ 대응 방안 (Mitigation)
 
-| 우선순위 | 조치 방법 |
-|----------|----------|
-| ✅ 권장 | **Spring Framework 5.3.18 또는 5.2.20 이상으로 업그레이드** |
-| ✅ 권장 | **Spring Boot 2.6.6 또는 2.5.12 이상으로 업그레이드** |
-| 🔄 임시 | Apache Tomcat을 10.0.20, 9.0.62, 8.5.78 이상으로 업그레이드 |
-| 🔄 임시 | JDK 9 이상 사용 중이면 JDK 8로 다운그레이드 |
-| 🔄 임시 | `@ControllerAdvice`에 `ClassLoader` 내부 필드 바인딩 차단 로직 추가 |
+| 중요도 | 조치 방안 | 대상 |
+|:---:|:---|:---|
+| 🔴 **긴급** | Spring Framework 버전을 `5.3.18` 또는 `5.2.20` 이상으로 업그레이드 | 애플리케이션 개발/운영 파트 |
+| 🟠 **경보** | Apache Tomcat 최신 마이너 버전 패치 적용 (9.0.62 이상) | 인프라/미들웨어 파트 |
+| 🟡 **주의** | Docker DB/SSH/VNC 패스워드를 기본값(`testtest`, `password`)에서 복잡도 기반으로 변경 | 인프라/DevOps 파트 |
 
 ---
 
-## 참고문헌
-
-- [SK쉴더스 EQST insight - Research Technique 202204](https://www.skshieldus.com)
-- [Spring 공식 블로그 - Spring4Shell RCE Early Announcement](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
-- [NVD - CVE-2022-22965](https://nvd.nist.gov/vuln/detail/CVE-2022-22965)
-- [JFrog Blog - SpringShell Zero-Day](https://jfrog.com/blog/springshell-zero-day-vulnerability-all-you-need-to-know/)
-- [Unit42 - CVE-2022-22965 SpringShell Analysis](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
-- [Spring Framework Patch Commit](https://github.com/spring-projects/spring-framework/commit/002546b3e4b8d791ea6acccb81eb3168f51abb15)
+<div align="center">
+  <sub>Created with 💻 Team EQST & AI Assistant</sub>
+</div>

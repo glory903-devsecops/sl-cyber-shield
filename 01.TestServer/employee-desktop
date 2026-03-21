@@ -1,0 +1,11 @@
+FROM kasmweb/desktop:1.8.0-edge
+
+USER root
+RUN apt-get update \
+	&& apt-get install -y git cifs-utils \
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY employee-desktop-entrypoint.sh /usr/local/bin/employee-desktop-entrypoint.sh
+RUN chmod +x /usr/local/bin/employee-desktop-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/employee-desktop-entrypoint.sh"]
