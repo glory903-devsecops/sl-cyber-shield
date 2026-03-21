@@ -12,7 +12,34 @@
 
 > [!CAUTION]
 > 본 디렉터리는 기존의 "CVE 취약점 체이닝" 공격(시나리오 1~3)과 대비되는 **"인프라 설정 오류(Misconfiguration)"** 파급을 조명합니다.
-> 해커는 복잡한 제로데이를 찾지 않고 "관리자의 실시"나 "잘못된 인프라 설정"을 집중적으로 파고듭니다.
+> 해커는 복잡한 제로데이를 찾지 않고 "관리자의 실수"나 "잘못된 인프라 설정"을 집중적으로 파고듭니다.
+
+---
+
+## 🗺️ 어택 벡터 (Attack Vector) 시각화
+
+```mermaid
+graph TD
+    classDef attacker fill:#ef4444,color:#fff,stroke-width:0px;
+    classDef pivot fill:#f97316,color:#fff,stroke-width:0px;
+    classDef target fill:#3b82f6,color:#fff,stroke-width:0px;
+    classDef nas fill:#10b981,color:#fff,stroke-width:0px;
+
+    A[💀 해커 PC<br>Attacker]:::attacker -- 1. Spring4Shell (RCE) --> B((🎯 Spring Server<br>웹쉘 거점)):::pivot
+    
+    subgraph "시나리오 A: SSH Pivot"
+    B -. "2. sshpass (암호: testtest)" .-> C((Struts Server)):::target
+    end
+    
+    subgraph "시나리오 B: VNC Tunneling"
+    A -. "3. Chisel 역방향 터널 (포트:6901)" .-> D((Employee Desktop<br>VNC)):::target
+    D -- "기본 접속 암호 (password)" --> E[(NAS Storage<br>도면 마운트)]:::nas
+    end
+    
+    subgraph "시나리오 C: Token Theft"
+    B -. "4. git-credentials 토큰 재사용" .-> F((Gitea Server<br>소스코드)):::target
+    end
+```
 
 ---
 

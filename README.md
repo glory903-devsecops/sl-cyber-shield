@@ -27,10 +27,7 @@
 
 > **Spring4Shell 👉 TeamCity 취약점 👉 Struts2 취약점**으로 이어지는 정석적인 제로데이 체인(CVE) 공격 스크립트입니다.
 ```bash
-# 1. 02.AttackScripts 디렉터리로 이동
-cd 02.AttackScripts
-
-# 2. 공격 스크립트 실행
+# 타겟 파일(run.py)은 최상위 루트 폴더에 위치합니다. 이동 없이 바로 실행하세요.
 python3 run.py
 ```
 </details>
