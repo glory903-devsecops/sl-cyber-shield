@@ -6,6 +6,5 @@ report_*.html
 01.TestServer/teamcity_server/datadir/
 01.TestServer/teamcity_agent/
 01.TestServer/gitea/
-03.FinalReport/
 01.TestServer/
 *01.TestServer*
