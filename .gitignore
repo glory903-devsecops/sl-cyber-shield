@@ -8,3 +8,4 @@ report_*.html
 01.TestServer/gitea/
 01.TestServer/
 *01.TestServer*
+99.Legacy/
