@@ -560,8 +560,20 @@ pre {{
     report_filename = f"sub_scenario_insider_threat_{now.strftime('%Y%m%d_%H%M%S')}.html"
     report_path = os.path.join(report_dir, report_filename)
 
-    with open(report_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
+    try:
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        print(f"  [📄 HTML 보고서 생성] 03.FinalReport/{report_filename} 파일을 열어보세요!")
+    except PermissionError:
+        import tempfile, shutil
+        tmp_path = os.path.join(tempfile.gettempdir(), report_filename)
+        with open(tmp_path, 'w', encoding='utf-8') as tf:
+            tf.write(html_content)
+        try:
+            shutil.move(tmp_path, report_path)
+            print(f"  [📄 HTML 보고서 생성] 03.FinalReport/{report_filename} 파일을 열어보세요!")
+        except Exception as e:
+            print(f"  [WARNING] 권한 문제로 03.FinalReport에 저장 불가. 임시 경로: {tmp_path} ({e})")
 
     print(f"  {Colors.OKGREEN}[HTML REPORT]{Colors.ENDC} {report_path}")
     print(f"{Colors.BOLD}{'=' * 60}{Colors.ENDC}\n")
