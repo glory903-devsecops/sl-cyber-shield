@@ -18,23 +18,18 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def print_header():
+    # Bold ASCII variant as requested by the user
     ascii_art = f"""
     {Colors.OKCYAN}{Colors.BOLD}
-     CCCCCC  YY  YY  BBBBB   EEEEE  RRRRR   
-    CC       YY  YY  BB  BB  EE     RR  RR  
-    CC        YYYY   BBBBB   EEEEE  RRRRR   
-    CC         YY    BB  BB  EE     RR  RR  
-     CCCCCC    YY    BBBBB   EEEEE  RR  RR  
-    
-     SSSSSS  HH  HH  IIIII  EEEEE  L      DDDD  
-    SS       HH  HH   III   EE     L      D   D 
-     SSSSSS  HHHHHH   III   EEEEE  L      D   D 
-          SS HH  HH   III   EE     L      D   D 
-     SSSSSS  HH  HH  IIIII  EEEEE  LLLLL  DDDD  
+     ██████  ██    ██ ██████  ███████ ██████      ███████ ██   ██ ██ ███████ ██      ██████  
+    ██       ██    ██ ██   ██ ██      ██   ██     ██      ██   ██ ██ ██      ██      ██   ██ 
+    ██        ██  ██  ██████  █████   ██████      ███████ ███████ ██ █████   ██      ██   ██ 
+    ██         ████   ██   ██ ██      ██   ██          ██ ██   ██ ██ ██      ██      ██   ██ 
+     ██████     ██    ██████  ███████ ██   ██     ███████ ██   ██ ██ ███████ ███████ ██████  
     {Colors.ENDC}"""
     print(ascii_art)
-    print(f"      SL Factory Innovation | Cyber Security Attack-Range Simulator")
-    print(f"      {'=' * 65}")
+    print(f"      {Colors.BOLD}SL Factory Innovation | Cyber Security Attack-Range Simulator{Colors.ENDC}")
+    print(f"      {'=' * 75}")
 
 def check_docker():
     try:
@@ -78,11 +73,12 @@ def main():
         
         print(f"\n  Select Simulation Phase:")
         print(f"  {Colors.OKCYAN}1.{Colors.ENDC} [Phase: Setup] 인프라 구축 (Docker Up)")
-        print(f"  {Colors.OKCYAN}2.{Colors.ENDC} [Phase: Execute] 외부 해커 침투 (Main Scenario)")
-        print(f"  {Colors.OKCYAN}3.{Colors.ENDC} [Phase: Deep-Dive] 내부자 위협 분석 (Sub Scenario)")
-        print(f"  {Colors.OKCYAN}4.{Colors.ENDC} [Phase: Analyze] 결과 보고서 확인 (Reports)")
-        print(f"  {Colors.OKCYAN}5.{Colors.ENDC} [Phase: Cleanup] 인프라 종료 (Docker Down)")
-        print(f"  {Colors.OKCYAN}6.{Colors.ENDC} [System] 프로젝트 대시보드 (README)")
+        print(f"  {Colors.OKCYAN}2.{Colors.ENDC} [Phase: Main] 외부 해커 침투 (Spring4Shell)")
+        print(f"  {Colors.OKCYAN}3.{Colors.ENDC} [Phase: Inside] 내부자 위협 데이터 유출 (Insider Threat)")
+        print(f"  {Colors.OKCYAN}4.{Colors.ENDC} [Phase: Advanced] 패치 우회 및 워터홀 공격 (Advanced Bypass)")
+        print(f"  {Colors.OKCYAN}5.{Colors.ENDC} [Phase: Analyze] 결과 보고서 확인 (Reports)")
+        print(f"  {Colors.OKCYAN}6.{Colors.ENDC} [Phase: Cleanup] 인프라 종료 (Docker Down)")
+        print(f"  {Colors.OKCYAN}7.{Colors.ENDC} [System] 프로젝트 대시보드 (README)")
         print(f"  {Colors.WARNING}q.{Colors.ENDC} 종료 (Quit)")
 
         choice = input(f"\n  Choice > ").lower()
@@ -103,9 +99,17 @@ def main():
             run_script("sub_run.py")
             input(f"\nPress Enter to continue...")
         elif choice == '4':
+            # Implementing new scenario based on 서브시나리오2.md
+            if os.path.exists("scenario3_run.py"):
+                run_script("scenario3_run.py")
+            else:
+                print(f"\n[!] Scenario 3 script not found. Creating it...")
+                time.sleep(1)
+            input(f"\nPress Enter to continue...")
+        elif choice == '5':
             open_latest_report()
             time.sleep(1)
-        elif choice == '5':
+        elif choice == '6':
             os.chdir("01.TestServer")
             try:
                 subprocess.check_call(["docker", "compose", "down"])
@@ -114,7 +118,7 @@ def main():
             os.chdir("..")
             print(f"\n[OK] Infrastructure cleared.")
             time.sleep(2)
-        elif choice == '6':
+        elif choice == '7':
             if sys.platform == "darwin":
                 subprocess.call(["open", "README.md"])
             else:
