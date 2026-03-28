@@ -20,23 +20,21 @@ def clear_screen():
 def print_header():
     ascii_art = f"""
     {Colors.OKCYAN}{Colors.BOLD}
-     ██████╗██╗   ██╗██████╗ ███████╗██████╗ 
-    ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗
-    ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝
-    ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗
-    ╚██████╗   ██║   ██████╔╝███████╗██║  ██║
-     ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝
+     CCCCCC  YY  YY  BBBBB   EEEEE  RRRRR   
+    CC       YY  YY  BB  BB  EE     RR  RR  
+    CC        YYYY   BBBBB   EEEEE  RRRRR   
+    CC         YY    BB  BB  EE     RR  RR  
+     CCCCCC    YY    BBBBB   EEEEE  RR  RR  
     
-     ███████╗██╗  ██╗██╗███████╗██╗     ██████╗ 
-     ██╔════╝██║  ██║██║██╔════╝██║     ██╔══██╗
-     ███████╗███████║██║█████╗  ██║     ██║  ██║
-     ╚════██║██╔══██║██║██╔══╝  ██║     ██║  ██║
-     ███████║██║  ██║██║███████╗███████╗██████╔╝
-     ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═════╝
+     SSSSSS  HH  HH  IIIII  EEEEE  L      DDDD  
+    SS       HH  HH   III   EE     L      D   D 
+     SSSSSS  HHHHHH   III   EEEEE  L      D   D 
+          SS HH  HH   III   EE     L      D   D 
+     SSSSSS  HH  HH  IIIII  EEEEE  LLLLL  DDDD  
     {Colors.ENDC}"""
     print(ascii_art)
-    print(f"      {Colors.OKBLUE}SL Factory Innovation | Cyber Security Attack-Range{Colors.ENDC}")
-    print(f"      {Colors.HEADER}{'=' * 55}{Colors.ENDC}")
+    print(f"      SL Factory Innovation | Cyber Security Attack-Range Simulator")
+    print(f"      {'=' * 65}")
 
 def check_docker():
     try:
@@ -49,11 +47,11 @@ def open_latest_report():
     report_dir = "03.FinalReport"
     reports = glob.glob(os.path.join(report_dir, "*.html"))
     if not reports:
-        print(f"\n{Colors.WARNING}[!] 생성된 보고서가 없습니다.{Colors.ENDC}")
+        print(f"\n[!] 생성된 보고서가 없습니다.")
         return
     
     latest = max(reports, key=os.path.getctime)
-    print(f"\n{Colors.OKGREEN}[*] 최신 보고서를 엽니다: {os.path.basename(latest)}{Colors.ENDC}")
+    print(f"\n[*] 최신 보고서를 엽니다: {os.path.basename(latest)}")
     
     if sys.platform == "darwin":
         subprocess.call(["open", latest])
@@ -63,11 +61,11 @@ def open_latest_report():
         subprocess.call(["xdg-open", latest])
 
 def run_script(script_name):
-    print(f"\n{Colors.OKBLUE}[*] Starting {script_name}...{Colors.ENDC}")
+    print(f"\n[*] Starting {script_name}...")
     try:
         subprocess.call([sys.executable, script_name])
     except KeyboardInterrupt:
-        print(f"\n{Colors.WARNING}[!] Simulation interrupted by user.{Colors.ENDC}")
+        print(f"\n[!] Simulation interrupted by user.")
 
 def main():
     while True:
@@ -76,56 +74,54 @@ def main():
         
         docker_active = check_docker()
         status_text = f"{Colors.OKGREEN}[RUNNING]{Colors.ENDC}" if docker_active else f"{Colors.FAIL}[NOT FOUND]{Colors.ENDC}"
-        print(f"  {Colors.BOLD}Infrastructure Status:{Colors.ENDC} {status_text}")
+        print(f"  System Status: {status_text}")
         
-        print(f"\n  {Colors.BOLD}Select Simulation Option:{Colors.ENDC}")
-        print(f"  {Colors.OKCYAN}1.{Colors.ENDC} [Main] 외부 해커 침투 (Spring4Shell Chain)")
-        print(f"  {Colors.OKCYAN}2.{Colors.ENDC} [Sub] 내부자 위협 & 공급망 공격 (Insider Threat)")
-        print(f"  {Colors.OKCYAN}3.{Colors.ENDC} 인프라 구축 (Docker Up)")
-        print(f"  {Colors.OKCYAN}4.{Colors.ENDC} 인프라 종료 (Docker Down)")
-        print(f"  {Colors.OKBLUE}5.{Colors.ENDC} {Colors.BOLD}결과 보고서 브라우징 (Browse Reports){Colors.ENDC}")
-        print(f"  {Colors.OKBLUE}6.{Colors.ENDC} 프로젝트 대시보드 (README View)")
+        print(f"\n  Select Simulation Phase:")
+        print(f"  {Colors.OKCYAN}1.{Colors.ENDC} [Phase: Setup] 인프라 구축 (Docker Up)")
+        print(f"  {Colors.OKCYAN}2.{Colors.ENDC} [Phase: Execute] 외부 해커 침투 (Main Scenario)")
+        print(f"  {Colors.OKCYAN}3.{Colors.ENDC} [Phase: Deep-Dive] 내부자 위협 분석 (Sub Scenario)")
+        print(f"  {Colors.OKCYAN}4.{Colors.ENDC} [Phase: Analyze] 결과 보고서 확인 (Reports)")
+        print(f"  {Colors.OKCYAN}5.{Colors.ENDC} [Phase: Cleanup] 인프라 종료 (Docker Down)")
+        print(f"  {Colors.OKCYAN}6.{Colors.ENDC} [System] 프로젝트 대시보드 (README)")
         print(f"  {Colors.WARNING}q.{Colors.ENDC} 종료 (Quit)")
 
-        choice = input(f"\n  {Colors.BOLD}Choice > {Colors.ENDC}").lower()
+        choice = input(f"\n  Choice > ").lower()
 
         if choice == '1':
-            run_script("run.py")
-            input(f"\n{Colors.OKBLUE}Press Enter to continue...{Colors.ENDC}")
-        elif choice == '2':
-            run_script("sub_run.py")
-            input(f"\n{Colors.OKBLUE}Press Enter to continue...{Colors.ENDC}")
-        elif choice == '3':
             os.chdir("01.TestServer")
             try:
-                # Try Docker Compose V2 first
                 subprocess.check_call(["docker", "compose", "up", "-d"])
             except:
-                # Fallback to Docker Compose V1
                 subprocess.call(["docker-compose", "up", "-d"])
             os.chdir("..")
-            print(f"{Colors.OKGREEN}[OK] Booting complete.{Colors.ENDC}")
-            time.sleep(2)
+            print(f"\n[OK] Infrastructure booted. Waiting for nodes...")
+            time.sleep(3)
+        elif choice == '2':
+            run_script("run.py")
+            input(f"\nPress Enter to continue...")
+        elif choice == '3':
+            run_script("sub_run.py")
+            input(f"\nPress Enter to continue...")
         elif choice == '4':
+            open_latest_report()
+            time.sleep(1)
+        elif choice == '5':
             os.chdir("01.TestServer")
             try:
                 subprocess.check_call(["docker", "compose", "down"])
             except:
                 subprocess.call(["docker-compose", "down"])
             os.chdir("..")
-            print(f"{Colors.OKGREEN}[OK] Infrastructure cleared.{Colors.ENDC}")
+            print(f"\n[OK] Infrastructure cleared.")
             time.sleep(2)
-        elif choice == '5':
-            open_latest_report()
-            time.sleep(1)
         elif choice == '6':
             if sys.platform == "darwin":
                 subprocess.call(["open", "README.md"])
             else:
-                print(f"{Colors.OKBLUE}[*] README.md 파일을 텍스트 에디터로 확인하세요.{Colors.ENDC}")
+                print(f"[*] Open README.md in your editor.")
                 time.sleep(2)
         elif choice == 'q':
-            print(f"\n{Colors.OKCYAN}SL Cyber-Shield를 종료합니다.{Colors.ENDC}")
+            print(f"\nExiting SL Cyber-Shield Simulator.")
             break
         else:
             time.sleep(1)

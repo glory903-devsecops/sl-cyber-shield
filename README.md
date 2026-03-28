@@ -1,28 +1,25 @@
 <div align="center">
- 
-# 🛡️ sl-cyber-shield (SCS-EP)
-### 🎯 모의해킹 자동화 및 포스트 익스플로잇 관제 플랫폼
-**SL Factory Innovation Team | Cyber Security Strategy**
 
-![Spring](https://img.shields.io/badge/Spring_Framework-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Python](https://img.shields.io/badge/Python_3-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![SL-Blue](https://img.shields.io/badge/CI_Color-%23151C5A?style=for-the-badge)
+# 제조업 산업 보안 관점에서 취약점 분석 및 위협 시뮬레이션
 
-**에스엘(SL) 스마트 팩토리 보안 강화를 위한 자동화된 취약점 분석 및 위협 시뮬레이션 체계**
+### 모의해킹 자동화 및 포스트 익스플로잇 관제 플랫폼
+SL Factory Innovation Team | Cyber Security Strategy
+
+Spring | Docker | Python | SL-Blue
+
+에스엘(SL) 스마트 팩토리 보안 강화를 위한 자동화된 취약점 분석 및 위협 시뮬레이션 체계
 
 <br>
 
-![통합 시뮬레이터 터미널 UI](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/terminal_runner_mockup_png_1774682200974.png)
+![통합 시뮬레이터 터미널 UI](./docs/assets/terminal_runner_mockup_png_1774682200974.png)
 
 <br>
 
 <br>
 
-> 💡 **본 플랫폼의 가치**
-> 이 프로젝트는 단순한 해킹 툴이 아닙니다. **에스엘(SL)의 SOC(Security Operations Center) 관점**에서 최신 제로데이 취약점(Spring4Shell)과 내부자 위협이 실제 공장 네트워크(OT/IT)에 어떤 치명적인 영향을 주는지 자동으로 시뮬레이션하고 시각화된 리포트를 제공합니다.
+> 본 플랫폼의 가치: 이 프로젝트는 단순한 해킹 툴이 아닙니다. 에스엘(SL)의 SOC(Security Operations Center) 관점에서 최신 제로데이 취약점(Spring4Shell)과 내부자 위협이 실제 공장 네트워크(OT/IT)에 어떤 치명적인 영향을 주는지 자동으로 시뮬레이션하고 시각화된 리포트를 제공합니다.
 > 
-> 📊 **[실시간 보안 보고서 보기 (GitHub Pages)](https://glory903-devsecops.github.io/sl-cyber-shield/)**
+> [실시간 보안 보고서 보기 (GitHub Pages)](https://glory903-devsecops.github.io/sl-cyber-shield/)
 
 </div>
 
@@ -31,7 +28,7 @@
 <br>
 
 <div align="center">
-  <h2>🚨 주의 사항 (경고)</h2>
+  <h2>주의 사항 (경고)</h2>
 </div>
 
 > [!CAUTION]
@@ -45,184 +42,114 @@
 
 <br>
 
-## 🌐 시각적 공격 여정 (Visual Attack Journey)
+## 프로젝트 배경 및 산업적 가치
+
+### 1. 대한민국 기업 환경에서의 Spring 프레임워크 위상
+대한민국 엔터프라이즈 및 공공 분야에서 자바(Java)와 스프링(Spring) 프레임워크는 '사실상의 표준(De Facto Standard)'입니다. 특히 한국지능정보사회진흥원(NIA)의 **전자정부 표준프레임워크(eGovFrame)**가 스프링 기반으로 구축되어 있어, 국내 기업의 백엔드 시스템 중 압도적인 비중이 스프링 환경에서 작동하고 있습니다.
+
+### 2. Spring4Shell(CVE-2022-22965)의 파급력
+2022년 초 발견된 Spring4Shell 취약점은 원격 코드 실행(RCE)이 가능한 치명적인 결함으로, 당시 보안 업계에 Log4Shell에 버금가는 충격적인 위협이었습니다. 특히 인증 없이 서버의 제어권을 탈취할 수 있다는 점에서 국내 주요 대기업 및 금융권 시스템에 비상 대응 체계를 가동하게 만든 핵심 취약점입니다.
+
+### 3. 2026년에도 이 시뮬레이션이 필요한 이유
+발견된 지 수년이 지났음에도 불구하고, 국내 제조업 현장의 스마트 팩토리 인프라는 다음과 같은 이유로 여전히 위험에 노출되어 있습니다:
+- **레거시 시스템 보존**: 공장 설비 제어와 긴밀히 연결된 구형 서버들은 호환성 문제로 인해 최신 보안 패치 적용이 지연되거나 중단된 경우가 많습니다.
+- **하드코딩된 의존성**: 과거 개발된 사내 관리 시스템들이 특정 구형 스프링 버전에 맞춰 하드코딩되어 있어, 프레임워크 업그레이드 자체가 불가능한 상태로 방치된 '보안 사각지대'가 다수 존재합니다.
+- **폐쇄망의 역설**: 외부 위협으로부터 안전하다고 믿는 폐쇄망 환경이 오히려 보안 업데이트의 누락을 야기하며, 일단 침투가 발생할 경우 방어 체계가 전무한 실정입니다.
+
+본 플랫폼은 이러한 실제 제조업의 보안 취약점을 기술적으로 재현하고, 이를 효과적으로 방어하기 위한 가시성을 제공합니다.
+
+---
+
+<br>
+
+## 시각적 공격 여정 (Visual Attack Journey)
 
 전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 웹 UI 상에서의 공격 경로를 시각화했습니다.
 
 ````carousel
-![정상적인 로그인 페이지](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/initial_login_state_png_1774680394803.png)
+![정상적인 로그인 페이지](./docs/assets/initial_login_state_png_1774680394803.png)
 <!-- slide -->
-![취약점 공격 성공 (RCE 웹쉘)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/attack_success_poc_1774680645916.png)
+![취약점 공격 성공 (RCE 웹쉘)](./docs/assets/attack_success_poc_1774680645916.png)
 <!-- slide -->
-![내부망 내부 도구 노출 (Gitea)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/gitea_main_page_1774680068622.png)
+![내부망 내부 도구 노출 (Gitea)](./docs/assets/gitea_main_page_1774680068622.png)
 <!-- slide -->
-![CI/CD 빌드 시스템 장악 (TeamCity)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/teamcity_internal_server_png_1774680494775.png)
+![CI/CD 빌드 시스템 장악 (TeamCity)](./docs/assets/teamcity_internal_server_png_1774680494775.png)
 ````
 
 > [!IMPORTANT]
-> **심각성 요약:** 위 이미지는 외부 로그인 페이지의 취약점 하나가 어떻게 서버 전체의 통제권(`root` 권한) 상실로 이어지고, 나아가 사내 모든 소스코드(Gitea)와 빌드 시스템(TeamCity)까지 노출시키는지 실시간으로 보여줍니다.
+> **심각성 요약:** 위 이미지는 외부 로그인 페이지의 취약점 하나가 어떻게 서버 전체의 통제권(root 권한) 상실로 이어지고, 나아가 사내 모든 소스코드(Gitea)와 빌드 시스템(TeamCity)까지 노출시키는지 실시간으로 보여줍니다.
 
 <br>
 
 ---
 
-## 🚀 아주 쉬운 시작 가이드 (Quick Start)
-## 🚀 Quick Start (One-Click Simulator)
+## Quick Start (One-Click Simulator)
 
 SL Cyber-Shield는 복잡한 시뮬레이션 환경을 한 번에 제어할 수 있는 통합 러너를 제공합니다.
 
-### 1️⃣ 사전 준비 사항 (Prerequisites)
+### 1. 사전 준비 사항 (Prerequisites)
 
 시뮬레이션을 시작하기 전, 아래 도구들이 설치되어 있어야 합니다:
 
 - **Docker Desktop**: 가상 취약점 환경을 구동하는 핵심 엔진입니다.
-  - [공식 다운로드 (Windows/Mac/Linux)](https://www.docker.com/products/docker-desktop/)
 - **Python 3.8+**: 시뮬레이션 시나리오를 제어하는 통합 러너 언어입니다.
-  - [공식 다운로드](https://www.python.org/downloads/)
 
-### 2️⃣ 원클릭 퀵 마스터 (Quick Start Guide)
+### 2. 원클릭 퀵 마스터 (Quick Start Guide)
 
-복잡한 설정 필요 없이, 터미널(Terminal)에서 단 세 줄의 명령어로 전체 보안 시뮬레이션을 통제할 수 있습니다.
+터미널(Terminal)에서 단 세 줄의 명령어로 전체 보안 시뮬레이션을 통제할 수 있습니다.
 
 ```bash
-# 1. 저장소 폴더로 이동 (이동 후 모든 작업이 가능합니다)
+# 1. 저장소 폴더로 이동
 cd sl-cyber-shield
 
-# 2. 통합 러너 실행 (모든 인프라와 공격 시나리오를 여기서 제어)
+# 2. 통합 러너 실행
 python3 start_shield.py
 ```
 
-### 3️⃣ 시뮬레이터 메뉴 활용법 (Usage Manual)
+### 3. 시나리오 제어 및 분석 워크플로우 (Usage Manual)
 
-`start_shield.py`가 실행되면 아래와 같은 통합 관제 메뉴가 나타납니다:
+`start_shield.py`가 실행되면 아래와 같은 논리적 보안 점검 순서에 따라 메뉴가 제공됩니다:
 
-| 메뉴 번호 | 기능 설명 | 기대 효과 |
-|:---:|:---|:---|
-| **[3]** | **인프라 구축 (Docker Up)** | 시뮬레이션에 필요한 Spring, DB, CI/CD 서버를 자동으로 생성합니다. |
-| **[1]** | **메인 공격 시나리오 (run.py)** | 외부 해커의 최초 침투부터 데이터 탈취까지의 전 과정을 자동 수행합니다. |
-| **[5]** | **결과 보고서 브라우징** | 방금 수행한 공격 결과를 고품질 HTML 보고서로 즉시 확인합니다. |
-| **[4]** | **인프라 종료 (Docker Down)** | 모든 실습 환경을 깔끔하게 제거하여 리소스를 회수합니다. |
+| 단계 | 메뉴 번호 | 기능 설명 | 기대 효과 |
+|:---:|:---:|:---|:---|
+| **준비** | **[1]** | **인프라 구축 (Docker Up)** | 시뮬레이션에 필요한 Spring, DB, CI/CD 서버 환경을 자동 생성합니다. |
+| **실행** | **[2]** | **외부 해커 침투 (Main Scenario)** | Spring4Shell 취약점을 활용한 실제 RCE 공격 과정을 시뮬레이션합니다. |
+| **심화** | **[3]** | **내부자 위협 (Sub Scenario)** | 인증된 내부 사용자의 악의적 행위에 따른 공급망 레이어 침투를 분석합니다. |
+| **분석** | **[4]** | **결과 보고서 브라우징** | 공격 성공 지점과 포렌식 증적을 기록한 고품질 HTML 보고서를 생성/확인합니다. |
+| **종료** | **[5]** | **인프라 종료 (Docker Down)** | 시뮬레이션 후 모든 가상 환경을 깨끗하게 제거하여 리소스를 회수합니다. |
+| **정보** | **[6]** | **프로젝트 대시보드 (README)** | 본 매뉴얼과 기술적 CVE 상세 정보를 확인합니다. |
 
-### 4️⃣ 상세 설치 가이드 및 트러블슈팅 (Full Manual)
+---
+
+### 4. 상세 설치 가이드 및 트러블슈팅 (Full Manual)
 
 전문적인 실습 환경 구축을 위한 상세 단계입니다.
 
 #### [Step 1] 도커(Docker) 설치
 본 시뮬레이터는 컨테이너 기술을 기반으로 합니다.
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)에 접속하여 본인의 OS에 맞는 설치 파일을 다운로드합니다.
-2. 설치 후 **Docker Desktop을 실행**하고, 트레이 아이콘에 고래 모양이 'Running' 상태인지 확인합니다.
+2. 설치 후 **Docker Desktop을 실행**하고, 상태가 'Running'인지 확인합니다.
 
 #### [Step 2] 저장소 복제 및 준비
 ```bash
-# GitHub에서 프로젝트를 내려받습니다.
 git clone https://github.com/glory903-devsecops/sl-cyber-shield.git
-
-# 프로젝트 폴더로 진입합니다. (이후 모든 작업의 기준점)
 cd sl-cyber-shield
 ```
 
 #### [Step 3] 통합 시뮬레이터 기동
 ```bash
-# 러너를 실행합니다.
 python3 start_shield.py
 ```
 - **주의**: 만약 `Docker Status: NOT FOUND`가 뜬다면 도커가 실행 중인지 확인하세요.
-- **팁**: 인프라 구축(Option 3) 후 약 10~20초 정도 대기하면 모든 서버(Spring, DB 등)가 완전히 활성화됩니다.
-
-#### [Step 4] 결과 확인 (Impact Verification)
-공격 시나리오(Option 1)가 끝나면 **Option 5**를 눌러 브라우저에서 보고서를 확인하세요. 
-보고서 상단의 **Visual Attack Journey**를 통해 보안 사고의 심각성을 시각적으로 입증할 수 있습니다.
+- **팁**: 인프라 구축(Option 1) 후 약 10~20초 정도 대기하면 모든 서버가 완전히 활성화됩니다.
 
 ---
 
-### 🌟 최소 명령, 최대 효과 (Impact Efficiency)
+### 최소 명령, 최대 효과 (Impact Efficiency)
 
-- **One-Command Control**: `start_shield.py` 파일 하나가 수십 개의 복잡한 보안 도구와 인프라 명령어를 대신합니다.
+- **One-Command Control**: start_shield.py 파일 하나가 수십 개의 복잡한 보안 도구와 인프라 명령어를 대신합니다.
 - **Enterprise-Grade Reporting**: 전문가 수준의 HTML 보고서가 자동으로 생성되어, 기술적 성과를 비기술자에게도 매력적으로 전달합니다.
-- **Zero-Configuration**: 도커와 파이썬만 있다면 별도의 복잡한 라이브러리 설치 없이 즉시 구동됩니다.
-
----
-
-### 2️⃣ 시나리오 선택 및 실행하기
-이 프로젝트는 **두 가지 서로 다른 해킹 시나리오**를 제공합니다. 원하시는 스크립트를 파이썬으로 실행하세요!
-
-<details open>
-<summary><b>🎬 [시나리오 A] 외부 공격자 시나리오 (run.py)</b></summary>
-
-외부 인터넷에 노출된 취약점(Spring4Shell)을 뚫고 들어와, 내부 시스템을 차례대로 장악해 나가는 정석적인 해커의 모습을 보여줍니다.
-```bash
-python3 run.py
-```
-</details>
-
-<details open>
-<summary><b>🕵️ [시나리오 B] 내부자 위협 시나리오 (sub_run.py)</b></summary>
-
-취약점 해킹 기술 없이, 단지 사내망에 접속할 수 있는 '불만 품은 직원'이 관리자의 설정 실수를 이용해 회사 기밀을 빼내는 무서운 현실을 보여줍니다.
-```bash
-python3 sub_run.py
-```
-</details>
-
-<br>
-
-> [!TIP]
-> 🎉 **자동 보고서 생성! (최신 렌더링 패치 완료)**
-> 스크립트 실행이 끝나면 `03.FinalReport` 폴더에 **시각화된 HTML 결과 보고서**가 생성됩니다. 
-> 
-> *✨ 새로운 기능: `curl` 같은 외부 프로그램 없이 순수 패킷 통신(TCP Ping)으로 내부망을 정찰하며, 브라우저 오류를 유발하는 웹쉘 특수문자를 완벽히 예방(HTML Escape 처리)하여 1단계부터 6단계까지 잘림 없이 스무스하게 렌더링됩니다!*
-
-<br>
-
----
-
-<br>
-
-## 🔎 두 시나리오는 무엇이 다를까요?
-
-보안 입문자분들을 위해 두 가지 핵심 관점을 비교했습니다.
-
-| 특징 | 🔴 외부 공격자 (run.py) | 🟠 내부자 위협 (sub_run.py) |
-|:---:|:---|:---|
-| **역할극** | 인터넷 밖의 외부 해커 | 인증받은 내부망 직원 |
-| **핵심 무기** | `CVE 제로데이 취약점` (소프트웨어 버그) | `Misconfiguration` (관리자의 설정 오류) |
-| **방어 난이도**| 패치(업데이트)를 잘 하면 막을 수 있음 | 권한 관리와 설정이 잘못되면 막기 매우 힘듦 |
-| **주요 목표** | Spring 웹쉘 배포 → TeamCity 해킹 → DB 탈취 | 망 분리 우회 → NAS 도면 유출 → CI/CD 백도어 삽입 |
-| **생성 보고서**| `main_scenario_report_*.html` | `sub_scenario_insider_threat_*.html` |
-
-<br>
-
----
-
-<br>
-
-## 📁 템플릿 폴더 구조 안내
-
-코드가 어떻게 나뉘어 있는지 궁금하신가요? 
-
-```text
-sl-cyber-shield/
-│
-├── README.md                      # 🌟 이 가이드 문서 (SL SCS-EP 통합 가이드)
-├── start_shield.py                # 🕹️ 통합 원클릭 시뮬레이터 (추천 시작점)
-├── run.py                         # 🚀 외부 공격자 시나리오 실행기 (Main Chain)
-├── sub_run.py                     # 🕵️ 내부자 위협 시나리오 실행기 (Sub Scenarios)
-│
-├── 01.TestServer/                 # 🐳 안전하게 해킹해 볼 수 있는 가상 서버들 (Docker)
-│   └── docker-compose.yml         #    (Spring 웹, 내부 DB, CI/CD, 사내 NAS 등)
-│
-├── 02.AttackScripts/              # ⚙️ 실제 해킹 기술이 담긴 코드 (고급 개발자용)
-│   ├── stage1_dropper.py          #    Spring4Shell 취약점 공격 모듈
-│   ├── stage2_uploader.py         #    세컨드 스테이지 웹쉘 업로드 모듈
-│   ├── stage3_lateral_movement.py #    내부망 횡적 이동 및 타겟 시스템 장악 모듈
-│   └── tests/                     #    ✅ 코드가 잘 도는지 확인하는 유닛 테스트 (총 44개)
-│
-├── 03.FinalReport/                # 📊 예쁜 HTML 결과 보고서가 저장되는 곳
-│
-└── 04.SubScenarios/               # 🔥 내부자 위협에 대한 상세 가이드 및 테스트 코드
-```
-
-<br>
+- **Zero-Configuration**: 도커와 파이썬만 있다면 별도의 외부 라이브러리 설치 없이 즉시 구동됩니다.
 
 ---
 
@@ -230,49 +157,21 @@ sl-cyber-shield/
 
 ## 🛡️ 우리는 어떻게 방어해야 할까요? (Mitigation)
 
-공격을 이해했다면 방어할 줄도 알아야 합니다. 아래의 수칙을 지켜 시스템을 보호하세요!
+공격을 이해했다면 방어할 줄도 알아야 합니다.
 
-1. 🔴 **라이브러리 패치 (가장 중요)**
+1. **라이브러리 패치 (가장 중요)**
    - Spring Framework 버전을 최신으로 업그레이드 하세요. (5.3.18 이상)
-2. 🔴 **비밀번호 하드코딩 금지**
-   - 개발 소스코드나 `application.properties`에 데이터베이스 비밀번호를 평문으로 적어두지 마세요.
-3. 🟠 **내부망 통합 관리의 위험성**
-   - 내부 시스템(CI/CD, NAS, DB)이라고 해서 비밀번호를 `test/test` 처럼 대충 지으면 내부자에게 털립니다.
-4. 🟡 **망 분리 및 권한 축소**
-   - 일반 직원이 개발용 핵심 데이터베이스나 빌드 서버(TeamCity)에 함부로 접근하지 못하도록 네트워크(ACL)를 차단하세요.
-
-<br>
-
----
-
-<br>
-
-## 📚 주요 활용 보안 취약점 (Key CVEs)
-
-본 시뮬레이터는 실제 산업 현장에서 발생할 수 있는 다음 3가지 핵심 취약점을 연쇄적으로 활용하여 **킬 체인(Kill Chain)**을 완성합니다.
-
-### 1️⃣ [Spring4Shell] CVE-2022-22965
-- **위험도**: <img src="https://img.shields.io/badge/CRITICAL-9.8-red?style=flat-square" />
-- **기술적 상세**: Spring Framework의 `DataBinder` 클래스가 클래스 로더 파라미터(Classloader parameters)를 노출하는 결함을 악용합니다. 공격자는 HTTP 파라미터를 조작하여 Tomcat의 로그 설정(`AccessLogValve`)을 강제로 변경하고, 서버에 임의의 `.jsp` 파일(웹쉘)을 생성하여 **원격 코드 실행(RCE)** 권한을 획득합니다.
-- **역할**: 외부 공격자의 **최초 침투 경로(Initial Access)** 및 통제권 탈취.
-- **참조**: [MITRE CVE-2022-22965](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22965)
-
-### 2️⃣ [TeamCity Auth Bypass] CVE-2024-27198
-- **위험도**: <img src="https://img.shields.io/badge/CRITICAL-9.8-red?style=flat-square" />
-- **기술적 상세**: TeamCity 웹 서버의 인증 처리 로직을 우회하여 인증되지 않은 사용자가 관리자 엔드포인트에 접근할 수 있게 합니다. 이를 통해 공격자는 관리자 계정을 생성하거나 빌드 환경을 마음대로 조작할 수 있습니다.
-- **역할**: 내부망에서의 **권한 상승(Privilege Escalation)** 및 소프트웨어 공급망(Supply Chain) 장악.
-- **참조**: [JetBrains Security Bulletin](https://blog.jetbrains.com/teamcity/2024/03/additional-critical-security-issues-affecting-teamcity-on-premises-cve-2024-27198-and-cve-2024-27199-update/)
-
-### 3️⃣ [Struts2 File Upload] CVE-2023-50164
-- **위험도**: <img src="https://img.shields.io/badge/HIGH-7.5-orange?style=flat-square" />
-- **기술적 상세**: Apache Struts2의 파일 업로드 매개변수에 대한 입력 검증 미흡으로, 공격자가 <b>경로 트래버설(Path Traversal)</b>을 통해 실행 권한이 있는 경로에 악성 파일을 업로드할 수 있습니다.
-- **역할**: 내부망 **횡적 이동(Lateral Movement)** 단계에서 격리된 데이터베이스 서버를 장악.
-- **참조**: [Apache Security Docs](https://struts.apache.org/announce-2023#a20231207-1)
+2. **비밀번호 하드코딩 금지**
+   - 개발 소스코드나 application.properties에 데이터베이스 비밀번호를 평문으로 적어두지 마세요.
+3. **내부망 통합 관리의 위험성**
+   - 내부 시스템이라고 해서 비밀번호를 대용하면 내부자에게 털립니다.
+4. **망 분리와 권한 축소**
+   - 일반 직원이 개발용 핵심 데이터베이스나 빌드 서버에 함부로 접근하지 못하게 차단하세요.
 
 <br>
 
 ---
 
 <div align="center">
-  <sub>🛡️ Created by SL Factory Innovation Team & AI Assistant | 에스엘 디지털 트러스트 인프라 보안 솔루션</sub>
+  <sub>Created by SL Factory Innovation Team & AI Assistant | 에스엘 디지털 트러스트 인프라 보안 솔루션</sub>
 </div>
