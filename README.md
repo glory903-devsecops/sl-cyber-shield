@@ -1,19 +1,20 @@
 <div align="center">
-
-# 🎯 모의해킹 자동화 실습 체계
-### 🛡️ 제로데이 공격부터 내부자 위협까지, 단 한 번의 클릭으로 경험하세요
+ 
+# 🛡️ sl-cyber-shield (SCS-EP)
+### 🎯 모의해킹 자동화 및 포스트 익스플로잇 관제 플랫폼
+**SL Factory Innovation Team | Cyber Security Strategy**
 
 ![Spring](https://img.shields.io/badge/Spring_Framework-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Python](https://img.shields.io/badge/Python_3-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![SOLID](https://img.shields.io/badge/Clean_Architecture-f59e0b?style=for-the-badge&logo=databricks&logoColor=white)
+![SL-Blue](https://img.shields.io/badge/CI_Color-%23151C5A?style=for-the-badge)
 
-**SK쉴더스 이큐스트(EQST) 가이드라인 기반 인프라 보안 진단 플랫폼**
+**에스엘(SL) 스마트 팩토리 보안 강화를 위한 자동화된 취약점 분석 및 위협 시뮬레이션 체계**
 
 <br>
 
-> 💡 **보안 입문자 환영!**
-> 이 프로젝트는 복잡한 해킹 기술을 몰라도, 스크립트 실행 한 번으로 **실제 해커가 시스템을 장악하는 전 과정**을 눈으로 보고 배울 수 있도록 설계되었습니다.
+> 💡 **본 플랫폼의 가치**
+> 이 프로젝트는 단순한 해킹 툴이 아닙니다. **에스엘(SL)의 SOC(Security Operations Center) 관점**에서 최신 제로데이 취약점(Spring4Shell)과 내부자 위협이 실제 공장 네트워크(OT/IT)에 어떤 치명적인 영향을 주는지 자동으로 시뮬레이션하고 시각화된 리포트를 제공합니다.
 
 </div>
 
@@ -154,5 +155,5 @@ CVE-2022-22965/
 ---
 
 <div align="center">
-  <sub>🛡️ Created with Team EQST & AI Assistant | 누구나 쉽게 시작하는 보안 자동화 플랫폼</sub>
+  <sub>🛡️ Created by SL Factory Innovation Team & AI Assistant | 에스엘 디지털 트러스트 인프라 보안 솔루션</sub>
 </div>
