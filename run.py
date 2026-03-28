@@ -507,48 +507,180 @@ try {
     <title>sl-cyber-shield | Automated Exploitation Report</title>
     <style>
         :root {{
-            --sl-dark-blue: #151C5A;
-            --sl-blue-2: #065590;
-            --sl-blue-3: #0192BF;
+            --sl-dark-blue: #00205B;
+            --sl-blue-primary: #0192BF;
+            --sl-accent: #00b8d4;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }}
-        body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #05081a; color: #e6e6e6; margin: 0; padding: 20px; }}
-        .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }}
-        h1 {{ color: var(--sl-blue-3); text-align: center; border-bottom: 2px solid var(--sl-dark-blue); padding-bottom: 15px; font-weight: 700; letter-spacing: -1px; }}
-        h2 {{ color: var(--sl-blue-3); margin-top: 35px; border-bottom: 1px dashed var(--sl-dark-blue); padding-bottom: 8px; font-size: 1.4em; }}
-        .summary {{ background: rgba(21, 28, 90, 0.3); padding: 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--sl-dark-blue); }}
-        .step {{ margin-bottom: 25px; padding: 20px; border-left: 6px solid #444; background: rgba(0, 0, 0, 0.2); border-radius: 0 8px 8px 0; }}
-        .step.success {{ border-left-color: var(--sl-blue-3); border-top: 1px solid rgba(1, 146, 191, 0.1); }}
-        .step.fail {{ border-left-color: #555; opacity: 0.7; }}
-        .badge-success {{ background: var(--sl-blue-3); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
-        .badge-fail {{ background: #555; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
-        pre {{ background: #000; color: #00ff41; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin-top: 10px; border: 1px solid #333; font-size: 12px; }}
-        .footer {{ text-align: center; margin-top: 50px; color: #555; font-size: 0.85em; border-top: 1px solid #222; padding-top: 20px; }}
-        .desc {{ color: #bbb; line-height: 1.7; margin-bottom: 20px; font-size: 1.05em; }}
-        .res-box {{ background-color: rgba(0,0,0,0.4); padding: 20px; border: 1px solid #222; border-radius: 8px; margin-top: 15px; }}
-        .cred-highlight {{ color: #f39c12; font-weight: bold; }}
+        body {{ 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at top right, #001a4d, #000814); 
+            color: #f8f9fa; 
+            margin: 0; 
+            padding: 40px 20px;
+            line-height: 1.6;
+        }}
+        .container {{ 
+            max-width: 1100px; 
+            margin: auto; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px); 
+            padding: 50px; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        }}
+        .header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 20px;
+        }}
+        .logo-text {{
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--sl-blue-primary);
+        }}
+        h1 {{ 
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--sl-blue-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }}
+        h2 {{ 
+            color: var(--sl-blue-primary); 
+            font-size: 1.5em; 
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        .summary {{ 
+            background: rgba(255, 255, 255, 0.03); 
+            padding: 30px; 
+            border-radius: 16px; 
+            margin-bottom: 40px; 
+            border-left: 4px solid var(--sl-blue-primary);
+        }}
+        .visual-journey {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }}
+        .evidence-card {{
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }}
+        .evidence-card img {{
+            width: 100%;
+            height: auto;
+            display: block;
+        }}
+        .evidence-label {{
+            padding: 10px;
+            font-size: 0.85em;
+            color: #888;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+        }}
+        .step {{ 
+            margin-bottom: 30px; 
+            padding: 24px; 
+            background: rgba(255, 255, 255, 0.02); 
+            border-radius: 16px; 
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s ease;
+        }}
+        .step:hover {{
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.04);
+        }}
+        .step.success {{ border-left: 4px solid var(--sl-blue-primary); }}
+        .step.fail {{ border-left: 4px solid #444; opacity: 0.6; }}
+        .badge {{
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }}
+        .badge-success {{ background: rgba(1, 146, 191, 0.2); color: var(--sl-blue-primary); border: 1px solid var(--sl-blue-primary); }}
+        .badge-fail {{ background: rgba(255, 255, 255, 0.1); color: #888; border: 1px solid #444; }}
+        pre {{ 
+            background: #000a1a; 
+            color: #00d4ff; 
+            padding: 20px; 
+            border-radius: 12px; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 13px; 
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.05);
+        }}
+        .footer {{ 
+            text-align: center; 
+            margin-top: 80px; 
+            color: #444; 
+            font-size: 0.9em; 
+            border-top: 1px solid var(--glass-border); 
+            padding-top: 30px; 
+        }}
+        .desc {{ color: #ccc; line-height: 1.7; margin-bottom: 20px; font-size: 1em; }}
+        .res-box {{ background-color: rgba(0,0,0,0.2); padding: 20px; border: 1px solid var(--glass-border); border-radius: 12px; margin-top: 15px; }}
+        .cred-highlight {{ color: var(--sl-blue-primary); font-weight: bold; }}
         ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 15px; }}
-        ul.creds li {{ background: rgba(255, 255, 255, 0.02); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-3); font-family: monospace; font-size: 13px; }}
+        ul.creds li {{ background: rgba(255, 255, 255, 0.03); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-primary); font-family: monospace; font-size: 13px; }}
     </style>
 </head>
 <body>
     <div class="container">
-        <div style="text-align:right; font-size:12px; color:var(--sl-blue-3); font-weight:900; letter-spacing:2px; margin-bottom:10px;">SL CYBER-SHIELD | SCS-EP</div>
-        <h1>🛡️ [MAIN SCENARIO] sl-cyber-shield 침투 분석 결과 보고서 <br><span style="font-size: 0.45em; color: #555; font-weight:400;">(Generated At: {current_time})</span></h1>
+        <div class="header">
+            <div class="logo-text">SL SMART FACTORY</div>
+            <div style="font-size: 14px; color: #888;">{current_time}</div>
+        </div>
+        
+        <h1>🛡️ 침투 분석 결과 보고서 <br><span style="font-size: 0.5em; color: var(--sl-blue-primary);">SCS-EP INTEGRATED SECURITY REPORT</span></h1>
         
         <div class="summary">
-            <h2 style="color:white; margin-top:0;">1. 시뮬레이션 개요 (Simulation Summary)</h2>
+            <h2>📊 시뮬레이션 개요</h2>
             <p class="desc">
-                본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong> 제로데이 취약점을 기점으로 
-                TeamCity 및 Struts2 취약점을 연계 공격하여 사내 핵심 자산(NAS 도면 데이터)을 탈취하는 
-                <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 전 과정을 기록합니다.
+                본 보고서는 에스엘(SL) 내부망의 보안 탄력성 측정을 위한 <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 결과입니다. 
+                Spring4Shell 취약점을 통한 최초 침투부터 내부망 횡적 이동(Lateral Movement)까지 전 과정을 가시화합니다.
             </p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size:14px;">
-                <p><strong>공격 대상 엔드포인트:</strong> <br><a style="color:var(--sl-blue-3);" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
-                <p><strong>최종 실습 판정:</strong> <br>{'<span class="badge-success" style="font-size:18px; padding:10px 20px; display:inline-block; margin-top:5px;">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 40px; font-size:14px;">
+                <div>
+                    <p style="color:#888; margin-bottom:5px;">Target Endpoint</p>
+                    <a style="color:var(--sl-blue-primary); font-family:monospace;" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a>
+                </div>
+                <div>
+                    <p style="color:#888; margin-bottom:5px;">Overall Status</p>
+                    {f'<span class="badge badge-success">Exploitation Success</span>' if all_pass else '<span class="badge badge-fail">Blocked / Incomplete</span>'}
+                </div>
+            </div>
+            
+            <h3 style="margin-top:30px; font-size:1.1em; color:var(--sl-blue-primary);">🌐 Visual Attack Journey (핵심 증적)</h3>
+            <div class="visual-journey">
+                <div class="evidence-card">
+                    <img src="https://raw.githubusercontent.com/glory903-devsecops/sl-cyber-shield/main/docs/assets/initial_login.png" onerror="this.src='https://placehold.co/600x400/000a1a/00d4ff?text=Initial+Login+Page'">
+                    <div class="evidence-label">[Before] 정상적인 서비스 인터페이스 (Initial Access Target)</div>
+                </div>
+                <div class="evidence-card">
+                    <img src="https://raw.githubusercontent.com/glory903-devsecops/sl-cyber-shield/main/docs/assets/attack_success.png" onerror="this.src='https://placehold.co/600x400/000a1a/00d4ff?text=WebShell+Success+PoC'">
+                    <div class="evidence-label">[After] 원격 코드 실행(RCE) 성공 증적</div>
+                </div>
             </div>
         </div>
 
-        <h2 style="color:white;">2. 단계별 공격 수행 상세 내역 (Detailed Attack Timeline)</h2>
+        <h2>🕵️ 단계별 상세 타임라인</h2>
 """
 
     step_descriptions = {
@@ -568,7 +700,7 @@ try {
     for key, label in labels.items():
         passed = results.get(key, False)
         status_class = "success" if passed else "fail"
-        badge = '<span class="badge-success">✅ 성공</span>' if passed else '<span class="badge-fail">❌ 실패/스킵</span>'
+        badge = '<span class="badge badge-success">Success</span>' if passed else '<span class="badge badge-fail">Incomplete</span>'
         desc = step_descriptions.get(key, "")
         detail = ""
 
@@ -607,8 +739,11 @@ try {
 
         html_content += f"""
             <div class="step {status_class}">
-                <h3 style="color:#fff;">{badge} {label}</h3>
-                <p class="desc">{desc}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="margin:0; font-size:1.2em;">{label}</h3>
+                    {badge}
+                </div>
+                <p class="desc" style="margin-top:0;">{desc}</p>
                 {detail}
             </div>
         """

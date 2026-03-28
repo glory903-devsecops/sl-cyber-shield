@@ -39,6 +39,27 @@
 
 <br>
 
+## 🌐 시각적 공격 여정 (Visual Attack Journey)
+
+전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 웹 UI 상에서의 공격 경로를 시각화했습니다.
+
+````carousel
+![정상적인 로그인 페이지](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/initial_login_state_png_1774680394803.png)
+<!-- slide -->
+![취약점 공격 성공 (RCE 웹쉘)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/attack_success_poc_1774680645916.png)
+<!-- slide -->
+![내부망 내부 도구 노출 (Gitea)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/gitea_main_page_1774680068622.png)
+<!-- slide -->
+![CI/CD 빌드 시스템 장악 (TeamCity)](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/teamcity_internal_server_png_1774680494775.png)
+````
+
+> [!IMPORTANT]
+> **심각성 요약:** 위 이미지는 외부 로그인 페이지의 취약점 하나가 어떻게 서버 전체의 통제권(`root` 권한) 상실로 이어지고, 나아가 사내 모든 소스코드(Gitea)와 빌드 시스템(TeamCity)까지 노출시키는지 실시간으로 보여줍니다.
+
+<br>
+
+---
+
 ## 🚀 아주 쉬운 시작 가이드 (Quick Start)
 ## 🚀 Quick Start (One-Click Simulator)
 
@@ -162,22 +183,25 @@ sl-cyber-shield/
 
 ## 📚 주요 활용 보안 취약점 (Key CVEs)
 
-본 시뮬레이터는 실제 산업 현장에서 발생할 수 있는 다음 3가지 핵심 취약점을 연쇄적으로 활용합니다:
+본 시뮬레이터는 실제 산업 현장에서 발생할 수 있는 다음 3가지 핵심 취약점을 연쇄적으로 활용하여 **킬 체인(Kill Chain)**을 완성합니다.
 
-### 1. [Spring4Shell] CVE-2022-22965
-- **설명**: Spring Framework의 Data Binding 기능을 악용하여 Tomcat 서버에 원격 코드 실행(RCE)을 가능하게 하는 취약점입니다.
-- **역할**: 외부 공격자의 **최초 침투 경로(Initial Access)**로 활용됩니다.
-- **참조**: [MITRE CVE-2022-22965](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22965), [NVD Detail](https://nvd.nist.gov/vuln/detail/CVE-2022-22965)
+### 1️⃣ [Spring4Shell] CVE-2022-22965
+- **위험도**: <img src="https://img.shields.io/badge/CRITICAL-9.8-red?style=flat-square" />
+- **기술적 상세**: Spring Framework의 `DataBinder` 클래스가 클래스 로더 파라미터(Classloader parameters)를 노출하는 결함을 악용합니다. 공격자는 HTTP 파라미터를 조작하여 Tomcat의 로그 설정(`AccessLogValve`)을 강제로 변경하고, 서버에 임의의 `.jsp` 파일(웹쉘)을 생성하여 **원격 코드 실행(RCE)** 권한을 획득합니다.
+- **역할**: 외부 공격자의 **최초 침투 경로(Initial Access)** 및 통제권 탈취.
+- **참조**: [MITRE CVE-2022-22965](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22965)
 
-### 2. [TeamCity Auth Bypass] CVE-2024-27198
-- **설명**: JetBrains TeamCity 서버의 인증을 우회하여 관리자 계정을 탈취할 수 있는 심각한 취약점입니다.
-- **역할**: 내부망에서의 **권한 상승(Privilege Escalation)** 및 빌드 시스템 장악에 사용됩니다.
-- **참조**: [MITRE CVE-2024-27198](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-27198), [JetBrains Security Bulletin](https://blog.jetbrains.com/teamcity/2024/03/additional-critical-security-issues-affecting-teamcity-on-premises-cve-2024-27198-and-cve-2024-27199-update/)
+### 2️⃣ [TeamCity Auth Bypass] CVE-2024-27198
+- **위험도**: <img src="https://img.shields.io/badge/CRITICAL-9.8-red?style=flat-square" />
+- **기술적 상세**: TeamCity 웹 서버의 인증 처리 로직을 우회하여 인증되지 않은 사용자가 관리자 엔드포인트에 접근할 수 있게 합니다. 이를 통해 공격자는 관리자 계정을 생성하거나 빌드 환경을 마음대로 조작할 수 있습니다.
+- **역할**: 내부망에서의 **권한 상승(Privilege Escalation)** 및 소프트웨어 공급망(Supply Chain) 장악.
+- **참조**: [JetBrains Security Bulletin](https://blog.jetbrains.com/teamcity/2024/03/additional-critical-security-issues-affecting-teamcity-on-premises-cve-2024-27198-and-cve-2024-27199-update/)
 
-### 3. [Struts2 File Upload] CVE-2023-50164
-- **설명**: Apache Struts2의 파일 업로드 매개변수를 조작하여 경로 트래버설 및 RCE를 유발하는 취약점입니다.
-- **역할**: 내부망 **횡적 이동(Lateral Movement)** 단계에서 직원 DB 서버를 장악하는 데 활용됩니다.
-- **참조**: [MITRE CVE-2023-50164](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-50164), [Apache Security Docs](https://struts.apache.org/announce-2023#a20231207-1)
+### 3️⃣ [Struts2 File Upload] CVE-2023-50164
+- **위험도**: <img src="https://img.shields.io/badge/HIGH-7.5-orange?style=flat-square" />
+- **기술적 상세**: Apache Struts2의 파일 업로드 매개변수에 대한 입력 검증 미흡으로, 공격자가 <b>경로 트래버설(Path Traversal)</b>을 통해 실행 권한이 있는 경로에 악성 파일을 업로드할 수 있습니다.
+- **역할**: 내부망 **횡적 이동(Lateral Movement)** 단계에서 격리된 데이터베이스 서버를 장악.
+- **참조**: [Apache Security Docs](https://struts.apache.org/announce-2023#a20231207-1)
 
 <br>
 

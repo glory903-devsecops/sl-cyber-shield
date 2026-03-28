@@ -400,33 +400,122 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
     :root {{
-        --sl-dark-blue: #151C5A;
-        --sl-blue-2: #065590;
-        --sl-blue-3: #0192BF;
-        --bg: #05081a;
-        --card: rgba(21, 28, 90, 0.2);
-        --accent: #0192BF;
+        --sl-dark-blue: #00205B;
+        --sl-blue-primary: #0192BF;
+        --sl-accent: #00b8d4;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
         --danger: #ef4444;
-        --success: #22c55e;
+        --success: #0192BF;
     }}
-    body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: #c9d1d9; line-height: 1.6; padding: 2rem 1rem; }}
-    .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 45px rgba(0,0,0,0.7); }}
-    h1 {{ font-size: 2.2rem; font-weight: 800; color: var(--sl-blue-3); text-align: center; margin-bottom: 0.5rem; letter-spacing: -1px; }}
-    .subtitle {{ text-align: center; color: #8b949e; margin-bottom: 2rem; font-size: 1rem; }}
-    .hero-badge {{ display: inline-block; padding: 0.4rem 1rem; border-radius: 50px; background: rgba(1, 146, 191, 0.1); border: 1px solid var(--sl-blue-3); color: var(--sl-blue-3); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin: 0 auto 1.5rem; display: table; }}
-    .summary-box {{ background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; border: 1px solid rgba(1, 146, 191, 0.2); }}
-    .summary-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }}
-    .summary-item strong {{ color: white; display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--sl-blue-3); }}
-    .phase-card {{ background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 1.5rem; padding: 1.5rem; border-left: 5px solid #333; }}
-    .phase-header {{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }}
-    .phase-title {{ display: flex; align-items: center; gap: 1rem; }}
-    .phase-num {{ background: var(--sl-dark-blue); color: var(--sl-blue-3); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 800; font-family: 'JetBrains Mono'; }}
-    .risk-badge {{ font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; }}
-    .risk-critical {{ background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }}
-    .risk-high {{ background: rgba(249,115,22,0.2); color: #f97316; border: 1px solid #f97316; }}
-    .risk-low {{ background: rgba(34,197,94,0.2); color: var(--success); border: 1px solid var(--success); }}
-    pre {{ background: #000; color: #33ff33; padding: 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border: 1px solid #222; overflow-x: auto; }}
-    .footer {{ text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #222; color: #555; font-size: 0.8rem; }}
+    body {{ 
+        font-family: 'Inter', sans-serif; 
+        background: radial-gradient(circle at top right, #001a4d, #000814); 
+        color: #f8f9fa; 
+        line-height: 1.6; 
+        padding: 40px 20px; 
+    }}
+    .container {{ 
+        max-width: 1100px; 
+        margin: auto; 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(20px); 
+        padding: 50px; 
+        border-radius: 24px; 
+        border: 1px solid var(--glass-border); 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+    }}
+    .hero-badge {{ 
+        display: inline-block; 
+        padding: 6px 16px; 
+        border-radius: 50px; 
+        background: rgba(1, 146, 191, 0.1); 
+        border: 1px solid var(--sl-blue-primary); 
+        color: var(--sl-blue-primary); 
+        font-size: 0.8rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        margin-bottom: 20px;
+    }}
+    h1 {{ 
+        font-size: 2.5rem; 
+        font-weight: 800; 
+        background: linear-gradient(135deg, #fff 0%, var(--sl-blue-primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px; 
+    }}
+    .subtitle {{ color: #888; margin-bottom: 40px; font-size: 1.1rem; }}
+    .summary-box {{ 
+        background: rgba(255, 255, 255, 0.03); 
+        border-radius: 16px; 
+        padding: 30px; 
+        margin-bottom: 40px; 
+        border-left: 4px solid var(--sl-blue-primary); 
+    }}
+    .summary-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }}
+    .summary-item strong {{ 
+        color: var(--sl-blue-primary); 
+        display: block; 
+        font-size: 0.75rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }}
+    .phase-card {{ 
+        background: rgba(255, 255, 255, 0.02); 
+        border: 1px solid var(--glass-border); 
+        border-radius: 16px; 
+        margin-bottom: 30px; 
+        padding: 30px; 
+        transition: transform 0.3s ease;
+    }}
+    .phase-card:hover {{
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.04);
+    }}
+    .phase-header {{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }}
+    .phase-title {{ display: flex; align-items: center; gap: 15px; }}
+    .phase-num {{ 
+        background: var(--sl-dark-blue); 
+        color: var(--sl-blue-primary); 
+        width: 45px; 
+        height: 45px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-radius: 12px; 
+        font-weight: 800; 
+        font-size: 1.2rem;
+    }}
+    .risk-badge {{ 
+        font-size: 0.7rem; 
+        font-weight: 800; 
+        padding: 4px 12px; 
+        border-radius: 50px; 
+        text-transform: uppercase; 
+    }}
+    .risk-critical {{ background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid var(--danger); }}
+    .risk-high {{ background: rgba(249,115,22,0.1); color: #f97316; border: 1px solid #f97316; }}
+    .risk-low {{ background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid #22c55e; }}
+    pre {{ 
+        background: #000a1a; 
+        color: #00d4ff; 
+        padding: 20px; 
+        border-radius: 12px; 
+        font-family: 'JetBrains Mono', monospace; 
+        font-size: 0.8rem; 
+        border: 1px solid rgba(0, 212, 255, 0.1); 
+        overflow-x: auto; 
+    }}
+    .footer {{ 
+        text-align: center; 
+        margin-top: 80px; 
+        padding-top: 30px; 
+        border-top: 1px solid var(--glass-border); 
+        color: #444; 
+        font-size: 0.9rem; 
+    }}
 </style>
 </head>
 <body>
