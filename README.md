@@ -66,15 +66,13 @@ Spring | Docker | Python | SL-Blue
 
 전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 웹 UI 상에서의 공격 경로를 시각화했습니다.
 
-````carousel
-![정상적인 로그인 페이지](./docs/assets/initial_login_state_png_1774680394803.png)
-<!-- slide -->
-![취약점 공격 성공 (RCE 웹쉘)](./docs/assets/attack_success_poc_1774680645916.png)
-<!-- slide -->
-![내부망 내부 도구 노출 (Gitea)](./docs/assets/gitea_main_page_1774680068622.png)
-<!-- slide -->
-![CI/CD 빌드 시스템 장악 (TeamCity)](./docs/assets/teamcity_internal_server_png_1774680494775.png)
-````
+| 1. 정상 로그인 페이지 | 2. 취약점 공격 성공 (RCE 웹쉘) |
+|:---:|:---:|
+| ![정상 로그인](./docs/assets/initial_login_state_png_1774680394803.png) | ![공격 성공](./docs/assets/attack_success_poc_1774680645916.png) |
+
+| 3. 내부망 도구 노출 (Gitea) | 4. 빌드 시스템 장악 (TeamCity) |
+|:---:|:---:|
+| ![내부망 노출](./docs/assets/gitea_main_page_1774680068622.png) | ![빌드 시스템 장악](./docs/assets/teamcity_internal_server_png_1774680494775.png) |
 
 > [!IMPORTANT]
 > **심각성 요약:** 위 이미지는 외부 로그인 페이지의 취약점 하나가 어떻게 서버 전체의 통제권(root 권한) 상실로 이어지고, 나아가 사내 모든 소스코드(Gitea)와 빌드 시스템(TeamCity)까지 노출시키는지 실시간으로 보여줍니다.
@@ -155,7 +153,7 @@ python3 start_shield.py
 
 <br>
 
-## 🛡️ 우리는 어떻게 방어해야 할까요? (Mitigation)
+## 우리는 어떻게 방어해야 할까요? (Mitigation)
 
 공격을 이해했다면 방어할 줄도 알아야 합니다.
 
