@@ -97,13 +97,21 @@ def main():
             input(f"\n{Colors.OKBLUE}Press Enter to continue...{Colors.ENDC}")
         elif choice == '3':
             os.chdir("01.TestServer")
-            subprocess.call(["docker-compose", "up", "-d"])
+            try:
+                # Try Docker Compose V2 first
+                subprocess.check_call(["docker", "compose", "up", "-d"])
+            except:
+                # Fallback to Docker Compose V1
+                subprocess.call(["docker-compose", "up", "-d"])
             os.chdir("..")
             print(f"{Colors.OKGREEN}[OK] Booting complete.{Colors.ENDC}")
             time.sleep(2)
         elif choice == '4':
             os.chdir("01.TestServer")
-            subprocess.call(["docker-compose", "down"])
+            try:
+                subprocess.check_call(["docker", "compose", "down"])
+            except:
+                subprocess.call(["docker-compose", "down"])
             os.chdir("..")
             print(f"{Colors.OKGREEN}[OK] Infrastructure cleared.{Colors.ENDC}")
             time.sleep(2)

@@ -13,6 +13,12 @@
 
 <br>
 
+![통합 시뮬레이터 터미널 UI](/Users/glory1994/.gemini/antigravity/brain/63bf562f-fb13-4dac-9ed2-38cbddacb25c/terminal_runner_mockup_png_1774682200974.png)
+
+<br>
+
+<br>
+
 > 💡 **본 플랫폼의 가치**
 > 이 프로젝트는 단순한 해킹 툴이 아닙니다. **에스엘(SL)의 SOC(Security Operations Center) 관점**에서 최신 제로데이 취약점(Spring4Shell)과 내부자 위협이 실제 공장 네트워크(OT/IT)에 어떤 치명적인 영향을 주는지 자동으로 시뮬레이션하고 시각화된 리포트를 제공합니다.
 > 
@@ -65,15 +71,75 @@
 
 SL Cyber-Shield는 복잡한 시뮬레이션 환경을 한 번에 제어할 수 있는 통합 러너를 제공합니다.
 
-### 1. 통합 러너 실행
+### 1️⃣ 사전 준비 사항 (Prerequisites)
+
+시뮬레이션을 시작하기 전, 아래 도구들이 설치되어 있어야 합니다:
+
+- **Docker Desktop**: 가상 취약점 환경을 구동하는 핵심 엔진입니다.
+  - [공식 다운로드 (Windows/Mac/Linux)](https://www.docker.com/products/docker-desktop/)
+- **Python 3.8+**: 시뮬레이션 시나리오를 제어하는 통합 러너 언어입니다.
+  - [공식 다운로드](https://www.python.org/downloads/)
+
+### 2️⃣ 원클릭 퀵 마스터 (Quick Start Guide)
+
+복잡한 설정 필요 없이, 터미널(Terminal)에서 단 세 줄의 명령어로 전체 보안 시뮬레이션을 통제할 수 있습니다.
+
 ```bash
+# 1. 저장소 폴더로 이동 (이동 후 모든 작업이 가능합니다)
+cd sl-cyber-shield
+
+# 2. 통합 러너 실행 (모든 인프라와 공격 시나리오를 여기서 제어)
 python3 start_shield.py
 ```
 
-### 2. 메뉴 구성
-- **[Option 1] Main Exploit Chain (run.py)**: 외부 공격자 시나리오 (Spring4Shell -> TeamCity -> NAS)
-- **[Option 2] Insider Threat (sub_run.py)**: 내부자 위협 시뮬레이션 (Recon -> Credential -> Supply Chain Attack)
-- **[Option 3/4] Infrastructure Control**: Docker Compose를 통한 테스트 서버 부팅 및 종료
+### 3️⃣ 시뮬레이터 메뉴 활용법 (Usage Manual)
+
+`start_shield.py`가 실행되면 아래와 같은 통합 관제 메뉴가 나타납니다:
+
+| 메뉴 번호 | 기능 설명 | 기대 효과 |
+|:---:|:---|:---|
+| **[3]** | **인프라 구축 (Docker Up)** | 시뮬레이션에 필요한 Spring, DB, CI/CD 서버를 자동으로 생성합니다. |
+| **[1]** | **메인 공격 시나리오 (run.py)** | 외부 해커의 최초 침투부터 데이터 탈취까지의 전 과정을 자동 수행합니다. |
+| **[5]** | **결과 보고서 브라우징** | 방금 수행한 공격 결과를 고품질 HTML 보고서로 즉시 확인합니다. |
+| **[4]** | **인프라 종료 (Docker Down)** | 모든 실습 환경을 깔끔하게 제거하여 리소스를 회수합니다. |
+
+### 4️⃣ 상세 설치 가이드 및 트러블슈팅 (Full Manual)
+
+전문적인 실습 환경 구축을 위한 상세 단계입니다.
+
+#### [Step 1] 도커(Docker) 설치
+본 시뮬레이터는 컨테이너 기술을 기반으로 합니다.
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)에 접속하여 본인의 OS에 맞는 설치 파일을 다운로드합니다.
+2. 설치 후 **Docker Desktop을 실행**하고, 트레이 아이콘에 고래 모양이 'Running' 상태인지 확인합니다.
+
+#### [Step 2] 저장소 복제 및 준비
+```bash
+# GitHub에서 프로젝트를 내려받습니다.
+git clone https://github.com/glory903-devsecops/sl-cyber-shield.git
+
+# 프로젝트 폴더로 진입합니다. (이후 모든 작업의 기준점)
+cd sl-cyber-shield
+```
+
+#### [Step 3] 통합 시뮬레이터 기동
+```bash
+# 러너를 실행합니다.
+python3 start_shield.py
+```
+- **주의**: 만약 `Docker Status: NOT FOUND`가 뜬다면 도커가 실행 중인지 확인하세요.
+- **팁**: 인프라 구축(Option 3) 후 약 10~20초 정도 대기하면 모든 서버(Spring, DB 등)가 완전히 활성화됩니다.
+
+#### [Step 4] 결과 확인 (Impact Verification)
+공격 시나리오(Option 1)가 끝나면 **Option 5**를 눌러 브라우저에서 보고서를 확인하세요. 
+보고서 상단의 **Visual Attack Journey**를 통해 보안 사고의 심각성을 시각적으로 입증할 수 있습니다.
+
+---
+
+### 🌟 최소 명령, 최대 효과 (Impact Efficiency)
+
+- **One-Command Control**: `start_shield.py` 파일 하나가 수십 개의 복잡한 보안 도구와 인프라 명령어를 대신합니다.
+- **Enterprise-Grade Reporting**: 전문가 수준의 HTML 보고서가 자동으로 생성되어, 기술적 성과를 비기술자에게도 매력적으로 전달합니다.
+- **Zero-Configuration**: 도커와 파이썬만 있다면 별도의 복잡한 라이브러리 설치 없이 즉시 구동됩니다.
 
 ---
 
