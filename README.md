@@ -157,6 +157,19 @@ python3 start_shield.py
 
 ---
 
+## 전문 보안 기술 보고서 (Technical Case Study)
+전문가 피드백을 반영하여, 단순 요약본이 아닌 **상세 재현 단계와 비주얼 증기(Video/Screenshot)**를 포함한 기술 감사 보고서를 구축했습니다.
+
+- **[전문가용 감사 보고서] [PENTEST_TECHNICAL_REPORT.md](./docs/PENTEST_TECHNICAL_REPORT.md)**
+- **주요 포함 내용:** 
+  - **시각적 유닛 테스트 (Visual PoC):** 실제 공격 성공 영상 및 Root 권한 획득 스크린샷 
+  - **상세 재현 경로 (Step-by-Step):** 전문가의 시나리오 실현 가이드를 충족하는 정밀 로드맵
+  - **자동화 검증 스크립트:** `05.Tests/scenario_verifier.py`를 통한 3/3 시나리오 상시 성공 증명
+
+---
+
+<br>
+
 <br>
 
 ## 우리는 어떻게 방어해야 할까요? (Mitigation)
