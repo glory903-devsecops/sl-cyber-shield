@@ -2,35 +2,122 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./03.FinalReport/index.html">
-    <title>SCS-EP Security Simulation Report Portal - Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Cyber-Shield | Security Report Portal</title>
     <style>
+        :root {
+            --sl-blue: #151C5A;
+            --sl-light-blue: #0192BF;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
         body {
-            background-color: #0f172a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
             color: white;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(21, 28, 90, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(1, 146, 191, 0.3) 0%, transparent 40%);
         }
-        .message {
+        .container {
             text-align: center;
+            max-width: 800px;
+            padding: 40px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        a {
-            color: #38bdf8;
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, white 0%, var(--sl-light-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .report-card {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
             text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--sl-light-blue);
+            background: rgba(1, 146, 191, 0.1);
+        }
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+        @media (max-width: 600px) {
+            .report-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <script>
-        window.location.href = "./03.FinalReport/index.html";
-    </script>
 </head>
 <body>
-    <div class="message">
-        <p>보고서 포털로 이동 중입니다...</p>
-        <p><a href="./03.FinalReport/index.html">자동으로 이동하지 않을 경우 여기를 클릭하세요.</a></p>
+    <div class="container">
+        <div class="logo">SL Cyber-Shield</div>
+        <div class="subtitle">SCS-EP Security Simulation Report Portal</div>
+        
+        <div class="report-grid">
+            <a href="./03.FinalReport/main_scenario_report_20260322_160011.html" class="report-card" target="_blank" rel="noopener noreferrer">
+                <div class="icon">🔴</div>
+                <div class="card-title">Main Exploit Chain</div>
+                <div class="card-desc">외부 공격자 시나리오 (Spring4Shell)</div>
+            </a>
+            <a href="./03.FinalReport/sub_scenario_insider_threat_20260322_160736.html" class="report-card" target="_blank" rel="noopener noreferrer">
+                <div class="icon">🟠</div>
+                <div class="card-title">Insider Threat</div>
+                <div class="card-desc">내부자 위협 및 공급망 공격 시나리오</div>
+            </a>
+            <a href="./03.FinalReport/journey.html" class="report-card" target="_blank" rel="noopener noreferrer">
+                <div class="icon">🎬</div>
+                <div class="card-title">Visual Journey</div>
+                <div class="card-desc">공격 시나리오 스토리텔링 (시각적 여정)</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 SL Factory Innovation Team | Enterprise Security Portfolio
+        </div>
     </div>
 </body>
 </html>
