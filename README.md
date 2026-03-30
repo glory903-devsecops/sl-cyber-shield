@@ -71,15 +71,15 @@ Spring | Docker | Python | SL-Blue
 *설명: 평범해 보이는 제조업 사내 로그인 페이지입니다. 하지만 백그라운드에서는 치명적인 취약점이 숨어 있습니다.*
 
 ### 2단계: 취약점 공격 성공 (RCE 웹쉘)
-![공격 성공](./docs/assets/attack_success_poc_1774680645916.png)
+![공격 성공](./docs/assets/video_scenario1_rce.webp)
 *설명: Spring4Shell 취약점을 통해 서버 권한을 획득하고, 공격자가 자유롭게 명령을 내릴 수 있는 웹쉘이 설치된 모습입니다.*
 
 ### 3단계: 내부망 도구 노출 (Gitea)
-![내부망 노출](./docs/assets/gitea_main_page_1774680068622.png)
+![내부망 노출](./docs/assets/video_scenario2_creds.webp)
 *설명: 침투 성공 후 내부 네트워크를 스캔하여 사내 소스코드 저장소가 외부에 노출된 것을 확인했습니다.*
 
 ### 4단계: 빌드 시스템 및 클라우드 자산 장악 (TeamCity)
-![빌드 시스템 장악](./docs/assets/teamcity_internal_server_png_1774680494775.png)
+![빌드 시스템 장악](./docs/assets/video_scenario3_bypass.webp)
 *설명: 소스코드를 넘어 실제 서버 배포를 담당하는 CI/CD 빌드 시스템까지 장악하여, 전사적인 소프트웨어 공급망 공격이 가능해진 단계입니다.*
 
 <br>
