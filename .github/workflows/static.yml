@@ -36,10 +36,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository or just the reports folder? 
-          # User asked for "관련 취약점 보고서를 깃헙 링크에서 열 수 있도록"
-          # So we upload 03.FinalReport
-          path: './03.FinalReport'
+          # Upload entire repository to allow access to nested subdirectories
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
