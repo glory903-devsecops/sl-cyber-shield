@@ -203,11 +203,13 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 01</span>
-                <span class="tag">Environment</span>
+                <span class="tag">Recognition</span>
                 <h2>정상 서비스의 이면</h2>
-                <p>평범해 보이는 제조업 사내 로그인 페이지입니다. 하지만 백그라운드에서는 클래스 데이터 바인딩 취약점이 해결되지 않은 채 구동되고 있습니다.</p>
+                <p>평범해 보이는 제조업 사내 로그인 페이지입니다. 하지만 백그라운드에서는 클래 데이터 바인딩 취약점이 해결되지 않은 채 구동되고 있습니다.</p>
                 <div class="step-visual" style="max-width: 500px; margin: 0 auto;">
-                    <img src="../docs/assets/initial_login_state_png_1774680394803.png" alt="Normal Login Screen">
+                    <a href="../docs/assets/poc_step01_rce.png" target="_blank">
+                        <img src="../docs/assets/poc_step01_rce.png" alt="Normal Login Screen">
+                    </a>
                 </div>
             </div>
         </div>
@@ -221,7 +223,9 @@
                 <p>공격자는 특수하게 제작된 HTTP 요청을 통해 서버의 로직을 조작합니다. 톰캣 로그 설정을 변조하여 서버 내부에 웹쉘(JSP)을 생성하고 원격 명령 실행 권한을 획득합니다.</p>
             </div>
             <div class="step-visual">
-                <img src="../docs/assets/video_scenario1_rce.webp" alt="RCE Attack Progress">
+                <a href="../docs/assets/step01_spring4shell_rce.webp" target="_blank">
+                    <img src="../docs/assets/step01_spring4shell_rce.webp" alt="RCE Attack Progress">
+                </a>
             </div>
         </div>
 
@@ -229,12 +233,14 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 03</span>
-                <span class="tag">Lateral Movement</span>
-                <h2>공급망 정보 취득</h2>
+                <span class="tag">Insider Threat</span>
+                <h2>내부 자산 탐색 및 정보 취득</h2>
                 <p>침투에 성공한 공격자가 내부 네트워크를 탐색합니다. 보안이 취약한 사내 소스코드 관리 시스템(Gitea)에 접근하여 핵심 프로젝트 정보와 DB 접속 정보를 탈취합니다.</p>
             </div>
             <div class="step-visual">
-                <img src="../docs/assets/video_scenario2_creds.webp" alt="Source Code & Credential Leak">
+                <a href="../docs/assets/step02_gitea_leak.webp" target="_blank">
+                    <img src="../docs/assets/step02_gitea_leak.webp" alt="Source Code & Credential Leak">
+                </a>
             </div>
         </div>
 
@@ -242,12 +248,14 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 04</span>
-                <span class="tag">Impact</span>
-                <h2>전사 인프라 장악</h2>
-                <p>최종적으로 빌드 시스템(TeamCity)의 취약점을 이용해 관리자 권한을 획득합니다. 이제 공격자는 사내 모든 소프트웨어의 배포를 통제하거나 클라우드 자산을 장악할 수 있습니다.</p>
+                <span class="tag">Advanced Bypass</span>
+                <h2>보안 우회 및 소스 코드 유출</h2>
+                <p>대소문자 구분 미흡 취약점을 이용해 보안 필터를 우회합니다. 실행되어야 할 JSP 파일의 소스 코드가 브라우저에 그대로 노출되어 핵심 로직이 유출됩니다.</p>
             </div>
             <div class="step-visual">
-                <img src="../docs/assets/video_scenario3_bypass.webp" alt="Build System Takeover">
+                <a href="../docs/assets/step03_teamcity_bypass.webp" target="_blank">
+                    <img src="../docs/assets/step03_teamcity_bypass.webp" alt="Case Sensitivity Bypass">
+                </a>
             </div>
         </div>
     </div>
@@ -256,7 +264,7 @@
         <h2>시뮬레이션 분석 완료</h2>
         <p>상세한 기술 분석 및 대응 방안이 담긴 레포트를 확인하십시오.</p>
         <br>
-        <a href="main_scenario_report_20260322_160011.html" class="cta-btn">View Technical Report</a>
+        <a href="main_scenario_report_20260322_160011.html" class="cta-btn" target="_blank" rel="noopener noreferrer">View Technical Report</a>
         <div style="margin-top: 50px; color: #475569; font-size: 0.8rem;">
             &copy; 2026 SL Factory Innovation Team | Enterprise Security Portfolio
         </div>

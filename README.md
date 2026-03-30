@@ -20,6 +20,8 @@ Spring | Docker | Python | SL-Blue
 > 본 플랫폼의 가치: 이 프로젝트는 단순한 해킹 툴이 아닙니다. 에스엘(SL)의 SOC(Security Operations Center) 관점에서 최신 제로데이 취약점(Spring4Shell)과 내부자 위협, 그리고 고도화된 패치 우회 기법이 실제 공장 네트워크(OT/IT)에 어떤 치명적인 영향을 주는지 자동으로 시뮬레이션하고 시각화된 리포트를 제공합니다.
 > 
 > [실시간 보안 보고서 보기 (GitHub Pages)](https://glory903-devsecops.github.io/sl-cyber-shield/)
+> <br>
+> <a href="https://glory903-devsecops.github.io/sl-cyber-shield/" target="_blank" rel="noopener noreferrer">👉 웹 포털에서 대화형 보고서 확인하기</a>
 
 </div>
 
@@ -66,21 +68,21 @@ Spring | Docker | Python | SL-Blue
 
 전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 웹 UI 상에서의 공격 경로를 시각화했습니다.
 
-### 1단계: 정상 로그인 페이지
-![정상 로그인](./docs/assets/initial_login_state_png_1774680394803.png)
-*설명: 평범해 보이는 제조업 사내 로그인 페이지입니다. 하지만 백그라운드에서는 치명적인 취약점이 숨어 있습니다.*
+### 1단계: 정찰 및 대상 식별 (Initial Recognition)
+> <a href="./docs/assets/poc_step01_rce.png" target="_blank"><img src="./docs/assets/poc_step01_rce.png" width="800"></a>
+> *설명: 평범해 보이는 제조업 사내 로그인 페이지입니다. 백그라운드에서는 클래스 데이터 바인딩 취약점이 해결되지 않은 채 구동되고 있습니다.*
 
-### 2단계: 취약점 공격 성공 (RCE 웹쉘)
-![공격 성공](./docs/assets/video_scenario1_rce.webp)
-*설명: Spring4Shell 취약점을 통해 서버 권한을 획득하고, 공격자가 자유롭게 명령을 내릴 수 있는 웹쉘이 설치된 모습입니다.*
+### 2단계: Spring4Shell RCE 침투 (Exploitation)
+> <a href="./docs/assets/step01_spring4shell_rce.webp" target="_blank"><img src="./docs/assets/step01_spring4shell_rce.webp" width="800"></a>
+> *설명: Spring4Shell(CVE-2022-22965) 취약점을 통해 서버의 톰캣 설정을 변조, 지속성 웹쉘을 주입하고 `root` 권한으로 원격 명령을 실행합니다.*
 
-### 3단계: 내부망 도구 노출 (Gitea)
-![내부망 노출](./docs/assets/video_scenario2_creds.webp)
-*설명: 침투 성공 후 내부 네트워크를 스캔하여 사내 소스코드 저장소가 외부에 노출된 것을 확인했습니다.*
+### 3단계: 내부망 탐색 및 자격 증명 탈취 (Credential Leak)
+> <a href="./docs/assets/step02_gitea_leak.webp" target="_blank"><img src="./docs/assets/step02_gitea_leak.webp" width="800"></a>
+> *설명: 획득한 권한으로 내부망의 소스코드 저장소(Gitea)에 접근하여, 개발자가 실수로 남긴 하드코딩된 데이터베이스 접속 정보를 탈취합니다.*
 
-### 4단계: 빌드 시스템 및 클라우드 자산 장악 (TeamCity)
-![빌드 시스템 장악](./docs/assets/video_scenario3_bypass.webp)
-*설명: 소스코드를 넘어 실제 서버 배포를 담당하는 CI/CD 빌드 시스템까지 장악하여, 전사적인 소프트웨어 공급망 공격이 가능해진 단계입니다.*
+### 4단계: 공급망 장악 및 소스 코드 유출 (Bypass & Source Leak)
+> <a href="./docs/assets/step03_teamcity_bypass.webp" target="_blank"><img src="./docs/assets/step03_teamcity_bypass.webp" width="800"></a>
+> *설명: 대소문자 구분 미흡(Case-Sensitivity) 취약점을 이용해 보안 필터를 우회, 빌드 시스템(TeamCity)의 핵심 로직과 보호된 소스 코드를 탈취합니다.*
 
 <br>
 
@@ -160,11 +162,11 @@ python3 start_shield.py
 ## 전문 보안 기술 보고서 (Technical Case Study)
 전문가 피드백을 반영하여, 단순 요약본이 아닌 **상세 재현 단계와 비주얼 증기(Video/Screenshot)**를 포함한 기술 감사 보고서를 구축했습니다.
 
-- **[전문가용 감사 보고서] [PENTEST_TECHNICAL_REPORT.md](./docs/PENTEST_TECHNICAL_REPORT.md)**
+- **<a href="./docs/PENTEST_TECHNICAL_REPORT.md" target="_blank">전문가용 감사 보고서 (Technical Case Study)</a>**
 - **주요 포함 내용:** 
   - **시각적 유닛 테스트 (Visual PoC):** 실제 공격 성공 영상 및 Root 권한 획득 스크린샷 
   - **상세 재현 경로 (Step-by-Step):** 전문가의 시나리오 실현 가이드를 충족하는 정밀 로드맵
-  - **자동화 검증 스크립트:** `05.Tests/scenario_verifier.py`를 통한 3/3 시나리오 상시 성공 증명
+  - **자동화 검증 스크립트:** <a href="./05.Tests/scenario_verifier.py" target="_blank">scenario_verifier.py</a>를 통한 3/3 시나리오 상시 성공 증명
 
 ---
 
