@@ -12,6 +12,8 @@
             --bg-dark: #070b14;
             --card-bg: rgba(30, 41, 59, 0.4);
             --accent: #38bdf8;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; }
         body {
@@ -26,7 +28,7 @@
         
         /* Header */
         header {
-            padding: 40px 5%;
+            padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -35,52 +37,81 @@
             top: 0;
             z-index: 100;
             background: rgba(7, 11, 20, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
         }
         .nav-logo {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 800;
             background: linear-gradient(135deg, #fff 0%, var(--sl-light-blue) 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
         .back-btn {
             text-decoration: none;
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            transition: color 0.3s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: var(--glass);
+            border: 1px solid var(--border);
         }
-        .back-btn:hover { color: white; }
+        .back-btn:hover { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
 
         /* Hero Section */
         .hero {
-            height: 80vh;
+            height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 0 5%;
-            background: radial-gradient(circle at center, rgba(1, 146, 191, 0.1) 0%, transparent 70%);
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(1, 146, 191, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(21, 28, 90, 0.2) 0%, transparent 50%);
         }
         .hero h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 800;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             letter-spacing: -2px;
+            line-height: 1.1;
         }
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #94a3b8;
-            max-width: 600px;
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+        .full-walkthrough-btn {
+            padding: 14px 28px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .full-walkthrough-btn:hover {
+            background: var(--accent);
+            color: var(--sl-blue);
+            transform: translateY(-2px);
         }
         .scroll-indicator {
-            margin-top: 50px;
+            position: absolute;
+            bottom: 40px;
             animation: bounce 2s infinite;
         }
         @keyframes bounce {
@@ -93,31 +124,31 @@
         .journey-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 100px 5%;
+            padding: 60px 5% 100px;
         }
         .step {
             display: flex;
-            gap: 60px;
-            margin-bottom: 15vh;
+            gap: 80px;
+            margin-bottom: 20vh;
             align-items: center;
-            opacity: 0.8;
-            transition: opacity 0.5s;
         }
         .step:nth-child(even) { flex-direction: row-reverse; }
         .step-content { flex: 1; }
         .step-visual {
-            flex: 1.5;
+            flex: 1.4;
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             position: relative;
             overflow: hidden;
+            transition: transform 0.5s;
         }
+        .step-visual:hover { transform: scale(1.02); }
         .step-visual img, .step-visual video {
             width: 100%;
-            border-radius: 12px;
+            border-radius: 10px;
             display: block;
         }
         .step-num {
@@ -125,59 +156,64 @@
             font-weight: 800;
             color: var(--sl-light-blue);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
             display: block;
         }
         .step h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2.8rem;
+            margin-bottom: 24px;
             color: white;
+            line-height: 1.2;
         }
         .step p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: #94a3b8;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
         .tag {
             display: inline-block;
-            padding: 6px 12px;
-            background: rgba(56, 189, 248, 0.1);
+            padding: 6px 14px;
+            background: rgba(56, 189, 248, 0.08);
             border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 99px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--accent);
-            margin-right: 10px;
-            font-weight: 600;
+            margin-right: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         /* Footer */
         footer {
-            padding: 100px 5% 50px;
+            padding: 120px 5% 60px;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(1, 146, 191, 0.02);
+            border-top: 1px solid var(--border);
+            background: linear-gradient(to bottom, transparent, rgba(1, 146, 191, 0.05));
         }
+        .final-cta h2 { font-size: 3rem; margin-bottom: 20px; }
         .cta-btn {
             display: inline-block;
-            padding: 16px 32px;
+            padding: 18px 40px;
             background: var(--sl-light-blue);
             color: white;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 700;
+            font-size: 1.1rem;
             transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(1, 146, 191, 0.3);
+            box-shadow: 0 15px 30px rgba(1, 146, 191, 0.3);
         }
         .cta-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(1, 146, 191, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(1, 146, 191, 0.4);
             background: #02a8db;
         }
 
-        @media (max-width: 900px) {
-            .step { flex-direction: column !important; text-align: center; gap: 30px; }
-            .hero h1 { font-size: 2.5rem; }
+        @media (max-width: 1000px) {
+            .step { flex-direction: column !important; text-align: center; gap: 40px; }
+            .hero h1 { font-size: 3rem; }
+            .step h2 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -185,14 +221,18 @@
     <header>
         <div class="nav-logo">SL Cyber-Shield</div>
         <a href="index.html" class="back-btn">
-            <span>←</span> Back to Portal
+            <span>←</span> 포털 홈으로
         </a>
     </header>
 
     <section class="hero">
-        <div class="step-num">Visual Storytelling</div>
-        <h1>The Anatomy of an Attack</h1>
-        <p>공격자의 시선으로 바라본 SL Cyber-Shield 침투 시나리오. <br>보안 취약점이 어떻게 실제 위협으로 전개되는지 시각적으로 경험하십시오.</p>
+        <div class="step-num">Visual Attack Journey</div>
+        <h1>공격 시나리오 분석:<br>침투의 해부학 (6단계)</h1>
+        <p>공격자의 정찰부터 최종 데이터 유출까지, SL Cyber-Shield의 정밀 보안 시뮬레이션 과정을 시각적 데이터로 추적합니다.</p>
+        <a href="../docs/assets/v2_attack_journey_full.webp" target="_blank" class="full-walkthrough-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            전체 시네마틱 워크스루 보기
+        </a>
         <div class="scroll-indicator">
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
         </div>
@@ -204,13 +244,13 @@
             <div class="step-content">
                 <span class="step-num">Step 01</span>
                 <span class="tag">Recognition</span>
-                <h2>정상 서비스의 이면</h2>
-                <p>평범해 보이는 제조업 사내 로그인 페이지입니다. 하지만 백그라운드에서는 클래 데이터 바인딩 취약점이 해결되지 않은 채 구동되고 있습니다.</p>
-                <div class="step-visual" style="max-width: 500px; margin: 0 auto;">
-                    <a href="../docs/assets/poc_step01_rce.png" target="_blank">
-                        <img src="../docs/assets/poc_step01_rce.png" alt="Normal Login Screen">
-                    </a>
-                </div>
+                <h2>타겟 정찰 및 표면 탐색</h2>
+                <p>대상 시스템의 노출된 로그인 인터페이스와 백엔드 서비스를 스캔합니다. 겉보기에는 정상적인 제조업 사내 포털이지만, 공격자는 환경 설정을 통해 잠재적 진입점을 식별합니다.</p>
+            </div>
+            <div class="step-visual">
+                <a href="../docs/assets/step01_recon_v2.png" target="_blank">
+                    <img src="../docs/assets/step01_recon_v2.png" alt="Reconnaissance">
+                </a>
             </div>
         </div>
 
@@ -218,13 +258,13 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 02</span>
-                <span class="tag">Exploitation</span>
-                <h2>Spring4Shell RCE 침투</h2>
-                <p>공격자는 특수하게 제작된 HTTP 요청을 통해 서버의 로직을 조작합니다. 톰캣 로그 설정을 변조하여 서버 내부에 웹쉘(JSP)을 생성하고 원격 명령 실행 권한을 획득합니다.</p>
+                <span class="tag">Vulnerability</span>
+                <h2>취약점 식별 (Vulnerability Audit)</h2>
+                <p>Spring Framework의 클래스 데이터 바인딩 취약점(CVE-2022-22965)의 존재 여부를 정밀 프로빙합니다. 서버가 예상치 못한 입력에 반응하는 과정을 실시간으로 모니터링합니다.</p>
             </div>
             <div class="step-visual">
-                <a href="../docs/assets/step01_spring4shell_rce.webp" target="_blank">
-                    <img src="../docs/assets/step01_spring4shell_rce.webp" alt="RCE Attack Progress">
+                <a href="../docs/assets/step02_audit_v2.png" target="_blank">
+                    <img src="../docs/assets/step02_audit_v2.png" alt="Vulnerability Audit">
                 </a>
             </div>
         </div>
@@ -233,13 +273,13 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 03</span>
-                <span class="tag">Insider Threat</span>
-                <h2>내부 자산 탐색 및 정보 취득</h2>
-                <p>침투에 성공한 공격자가 내부 네트워크를 탐색합니다. 보안이 취약한 사내 소스코드 관리 시스템(Gitea)에 접근하여 핵심 프로젝트 정보와 DB 접속 정보를 탈취합니다.</p>
+                <span class="tag">Exploitation</span>
+                <h2>RCE 페이로드 주입 및 침투</h2>
+                <p>악성 HTTP 페이로드를 전송하여 톰캣 로깅 옵션을 변조합니다. 서버 내부에 영구적인 웹쉘(Stager)을 생성함으로써 원격 명령 실행 권한을 최종 획득합니다.</p>
             </div>
             <div class="step-visual">
-                <a href="../docs/assets/step02_gitea_leak.webp" target="_blank">
-                    <img src="../docs/assets/step02_gitea_leak.webp" alt="Source Code & Credential Leak">
+                <a href="../docs/assets/step03_rce_v2.webp" target="_blank">
+                    <img src="../docs/assets/step03_rce_v2.webp" alt="RCE Exploitation">
                 </a>
             </div>
         </div>
@@ -248,25 +288,57 @@
         <div class="step">
             <div class="step-content">
                 <span class="step-num">Step 04</span>
-                <span class="tag">Advanced Bypass</span>
-                <h2>보안 우회 및 소스 코드 유출</h2>
-                <p>대소문자 구분 미흡 취약점을 이용해 보안 필터를 우회합니다. 실행되어야 할 JSP 파일의 소스 코드가 브라우저에 그대로 노출되어 핵심 로직이 유출됩니다.</p>
+                <span class="tag">Post-Exploitation</span>
+                <h2>권한 상승 및 시스템 장악</h2>
+                <p>확보한 웹쉘을 통해 시스템 명령어를 실행합니다. `root` 권한 획득 여부를 확인하고, 내부 네트워크 구성을 파악하여 거점을 심화하기 위한 후속 시뮬레이션을 준비합니다.</p>
             </div>
             <div class="step-visual">
-                <a href="../docs/assets/step03_teamcity_bypass.webp" target="_blank">
-                    <img src="../docs/assets/step03_teamcity_bypass.webp" alt="Case Sensitivity Bypass">
+                <a href="../docs/assets/step04_root_v2.png" target="_blank">
+                    <img src="../docs/assets/step04_root_v2.png" alt="Root Access Proof">
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step">
+            <div class="step-content">
+                <span class="step-num">Step 05</span>
+                <span class="tag">Lateral Movement</span>
+                <h2>내부망 수평 이동 및 자산 탐색</h2>
+                <p>장악된 서버를 발판 삼아 사내 소스코드 저장소(Gitea)에 접근합니다. 핵심 프로젝트의 소스코드와 내부에 하드코딩된 데이터베이스 자격 증명을 정밀 탐색합니다.</p>
+            </div>
+            <div class="step-visual">
+                <a href="../docs/assets/step05_lateral_v2.png" target="_blank">
+                    <img src="../docs/assets/step05_lateral_v2.png" alt="Lateral Movement Gitea">
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step">
+            <div class="step-content">
+                <span class="step-num">Step 06</span>
+                <span class="tag">Exfiltration</span>
+                <h2>공격 우회 및 최종 데이터 유출</h2>
+                <p>대소문자 미구분 필터링 등 보안 취약점을 이용해 접근 제어를 우회합니다. 최종적으로 CI/CD 서버(TeamCity) 및 주요 기밀 소스코드를 원격지로 유출하며 시뮬레이션을 종료합니다.</p>
+            </div>
+            <div class="step-visual">
+                <a href="../docs/assets/step06_leak_v2.png" target="_blank">
+                    <img src="../docs/assets/step06_leak_v2.png" alt="Data Exfiltration">
                 </a>
             </div>
         </div>
     </div>
 
     <footer>
-        <h2>시뮬레이션 분석 완료</h2>
-        <p>상세한 기술 분석 및 대응 방안이 담긴 레포트를 확인하십시오.</p>
-        <br>
-        <a href="main_scenario_report_20260322_160011.html" class="cta-btn" target="_blank" rel="noopener noreferrer">View Technical Report</a>
-        <div style="margin-top: 50px; color: #475569; font-size: 0.8rem;">
-            &copy; 2026 SL Factory Innovation Team | Enterprise Security Portfolio
+        <div class="final-cta">
+            <h2>보안 시뮬레이션 종료</h2>
+            <p>위험 통제 및 대응 방안이 포함된 기술 보고서를 확인하십시오.</p>
+            <br>
+            <a href="main_scenario_report_20260328_185917.html" class="cta-btn" target="_blank">상세 기술 보고서 보기</a>
+        </div>
+        <div style="margin-top: 60px; color: #475569; font-size: 0.85rem;">
+            &copy; 2026 SL Factory Innovation Team | Security Intelligence Portfolio
         </div>
     </footer>
 </body>
