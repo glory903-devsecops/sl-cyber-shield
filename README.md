@@ -2,7 +2,7 @@
 
 # SL Cyber-Shield: 스마트 팩토리 위협 시뮬레이션 플랫폼
 
-### [🚀 실시간 보안 보고서 포털 (Demo) 바로가기](https://github.com/glory903-devsecops/sl-cyber-shield?tab=readme-ov-file)
+### [🚀 실시간 보안 보고서 포털 (Demo) 바로가기](https://glory903-devsecops.github.io/sl-cyber-shield/)
 
 #### 모의해킹 자동화 및 포스트 익스플로잇 관제 시스템
 
