@@ -2,11 +2,11 @@
 
 # SL Cyber-Shield: 스마트 팩토리 위협 시뮬레이션 플랫폼
 
-### 모의해킹 자동화 및 포스트 익스플로잇 관제 시스템
+### [🚀 실시간 보안 보고서 포털 (Demo) 바로가기](https://github.com/glory903-devsecops/sl-cyber-shield?tab=readme-ov-file)
+
+#### 모의해킹 자동화 및 포스트 익스플로잇 관제 시스템
 
 ![Spring](https://img.shields.io/badge/Spring-🌱-green) ![Docker](https://img.shields.io/badge/Docker-🐳-blue) ![Python](https://img.shields.io/badge/Python-🐍-yellow) ![SL-Blue](https://img.shields.io/badge/SL--Blue-blue)
-
-[실시간 보안 보고서 보기 (GitHub Pages) — 웹 포털에서 대화형 보고서 확인하기](https://github.com/glory903-devsecops/sl-cyber-shield?tab=readme-ov-file)
 
 에스엘(SL) 스마트 팩토리 보안 강화를 위한 최신 제로데이(Spring4Shell) 및 공급망 공격 통합 시뮬레이션 체계입니다.
 
@@ -15,10 +15,10 @@
 ---
 
 ## ⚡ Quick Start
-터미널에서 단 몇 줄의 명령만으로 실제 제조업 타겟 시스템에 대한 보안 시뮬레이션을 시작할 수 있습니다.
+터미널에서 단 몇 줄의 명령만으로 실제 제조업 타켓 시스템에 대한 보안 시뮬레이션을 시작할 수 있습니다.
 
 ![Quick start: run script in terminal](./docs/assets/terminal_hero.png)
-*(플레이스홀더 — 실제 스크린샷으로 교체 요망)*
+*보안 시뮬레이터 통합 제어 센터 (`start_shield.py`)*
 
 ```bash
 # 1. 저장소 복제
@@ -26,27 +26,38 @@ git clone https://github.com/glory903-devsecops/sl-cyber-shield.git
 cd sl-cyber-shield
 
 # 2. 통합 시뮬레이터 실행
-# 확인 필요: 루트 폴더에 run.sh가 있다면 ./run.sh를 사용하고, 없을 경우 아래 명령을 실행하십시오.
-python3 start_shield.py # 또는 docker-compose up -d
+python3 start_shield.py
 ```
 
 ---
 
-## 🎬 시각적 공격 여정 (Visual Attack Journey)
-전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 웹 UI 상에서의 공격 경로를 시각화했습니다.
+## 🎬 시각적 공격 여정 (Visual Attack Journey: 6-Step)
+전문가가 아닌 사람들에게도 보안 위협의 심각성을 전달하기 위해, 공격자의 침투 경로를 6단계 여정으로 시각화했습니다.
 
-### 1단계: 정찰 및 대상 식별 (Initial Recognition)
-> 평범해 보이는 제조업 사내 로그인 페이지입니다. 백그라운드에서는 클래스 데이터 바인딩 취약점이 해결되지 않은 채 구동되고 있습니다.
-> 
-> <img src="./docs/assets/step01_recon_v2.png" width="800" alt="Login page - vulnerable class data binding">
-
-### 2단계: 핵심 침투 및 데이터 유출
-2단계에 나오는 내용에 일부 이미지만 보여집니다. 자세한 분석은 [상세 보고서]를 참조하십시오.
+### [Phase 1] 초기 침투 및 거점 확보
+1. **타겟 정찰 (Reconnaissance)**: 대상 시스템의 노출된 인터페이스와 백엔드 서비스를 스캔하여 잠재적 진입점을 식별합니다.
+2. **취약점 식별 (Vulnerability Audit)**: Spring4Shell(CVE-2022-22965) 취약점의 존재 여부를 정밀 프로빙합니다.
+3. **RCE 페이로드 주입 (Exploitation)**: 악성 페이로드를 통해 서버 권한을 획득하고 `root` 쉘을 탈취하는 핵심 과정을 재현합니다.
 
 <div align="center">
-  <img src="./docs/assets/step02_audit_v2.png" width="400" alt="Step 2-1: Audit">
-  <img src="./docs/assets/step03_rce_v2.webp" width="400" alt="Step 2-2: RCE">
+  <img src="./docs/assets/step01_recon_v2.png" width="260" alt="Step 1: Recon">
+  <img src="./docs/assets/step02_audit_v2.png" width="260" alt="Step 2: Audit">
+  <img src="./docs/assets/step03_rce_v2.webp" width="260" alt="Step 3: RCE Success">
 </div>
+
+### [Phase 2] 권한 상승 및 자산 탈취
+4. **권한 상승 및 시스템 장악 (Privilege Escalation)**: 확보된 웹쉘을 통해 `root` 권한을 최종 확인하고 백도어를 심화합니다.
+5. **내부망 수평 이동 (Lateral Movement)**: 장악된 서버를 거점으로 빌드 서버(TeamCity) 및 소스코드 저장소를 탐색합니다.
+6. **최종 데이터 유출 (Exfiltration)**: 내부 기밀 데이터 및 데이터베이스 자격 증명을 탈취하여 외부로 비인가 유출합니다.
+
+<div align="center">
+  <img src="./docs/assets/step04_root_v2.png" width="260" alt="Step 4: Root">
+  <img src="./docs/assets/step05_lateral_v2.png" width="260" alt="Step 5: Lateral">
+  <img src="./docs/assets/step06_leak_v2.png" width="260" alt="Step 6: Leak">
+</div>
+
+> [!TIP]
+> **[전체 시네마틱 워크스루 보기](./docs/assets/v2_attack_journey_full.webp)** — 하이라이트 영상으로 침투 전 과정을 한눈에 확인하세요.
 
 ---
 
