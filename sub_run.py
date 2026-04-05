@@ -20,6 +20,9 @@ import sys
 import os
 import datetime
 
+from src.application.report_bundle import export_report_bundle
+from src.application.report_payloads import build_insider_report_payload
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "02.AttackScripts"))
 
 try:
@@ -597,6 +600,37 @@ TeamCity가 자동으로 빌드/배포하면 프로덕션 서버에 백도어가
             print(f"  [WARNING] 권한 문제로 03.FinalReport에 저장 불가. 임시 경로: {tmp_path} ({e})")
 
     print(f"  {Colors.OKGREEN}[HTML REPORT]{Colors.ENDC} {report_path}")
+
+    try:
+        structured_payload = build_insider_report_payload(
+            report_filename=report_filename,
+            current_time=current_time,
+            results=results,
+            details=details,
+            phase_meta=phase_meta,
+        )
+
+        bundle_result = export_report_bundle(
+            os.path.dirname(os.path.abspath(__file__)),
+            report_filename,
+            structured_payload,
+        )
+        if bundle_result.success:
+            print(f"  {Colors.OKGREEN}[STATIC REPORT]{Colors.ENDC} 03.FinalReport/{report_filename}")
+            print(
+                f"  {Colors.OKGREEN}[JSON DATA]{Colors.ENDC} 03.FinalReport/data/{os.path.splitext(report_filename)[0]}.json"
+            )
+            print(f"  {Colors.OKGREEN}[MANIFEST]{Colors.ENDC} 03.FinalReport/data/{bundle_result.manifest_path.name}")
+            if bundle_result.pdf_path.exists():
+                print(f"  {Colors.OKGREEN}[PDF REPORT]{Colors.ENDC} 03.FinalReport/{bundle_result.pdf_path.name}")
+        else:
+            warn(
+                f"Hybrid report pipeline fallback activated: {bundle_result.stderr or bundle_result.stdout or 'renderer unavailable'}"
+            )
+            info(f"Manifest updated: 03.FinalReport/data/{bundle_result.manifest_path.name}")
+    except Exception as e:
+        warn(f"Structured report export skipped: {e}")
+
     print(f"{Colors.BOLD}{'=' * 60}{Colors.ENDC}\n")
 
 

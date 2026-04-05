@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "updatedAt": "2026-03-30 23:19:23",
+  "reports": [
+    {
+      "slug": "main_scenario_report_20260330_231923",
+      "kind": "main",
+      "title": "SL Cyber-Shield Main Exploit Chain",
+      "subtitle": "Spring4Shell 기반 메인 침투 시나리오의 최신 고정 보고서입니다.",
+      "generatedAt": "2026-03-30 23:19:23",
+      "htmlFile": "main_scenario_report_20260330_231923.html",
+      "jsonFile": "",
+      "pdfFile": "",
+      "hasPdf": false,
+      "renderer": "legacy-html"
+    },
+    {
+      "slug": "sub_scenario_insider_threat_20260328_184448",
+      "kind": "insider",
+      "title": "SL Cyber-Shield Insider Threat Audit",
+      "subtitle": "내부자 위협 및 공급망 이동 흐름의 최신 고정 보고서입니다.",
+      "generatedAt": "2026-03-28 18:44:48",
+      "htmlFile": "sub_scenario_insider_threat_20260328_184448.html",
+      "jsonFile": "",
+      "pdfFile": "",
+      "hasPdf": false,
+      "renderer": "legacy-html"
+    }
+  ]
+}

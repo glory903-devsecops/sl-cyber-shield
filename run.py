@@ -23,6 +23,9 @@ import sys
 import os
 import datetime
 
+from src.application.report_bundle import export_report_bundle
+from src.application.report_payloads import build_main_report_payload
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "02.AttackScripts"))
 
 try:
@@ -768,6 +771,42 @@ try {
         print(f"  [📄 HTML 보고서 생성] 03.FinalReport/{report_filename} 파일을 열어보세요!")
     except Exception as e:
         print(f"  [WARNING] 보고서 생성 실패: {e}")
+
+    try:
+        structured_payload = build_main_report_payload(
+            report_filename=report_filename,
+            current_time=current_time,
+            target_url=TARGET_URL,
+            stage2_url=STAGE2_URL,
+            all_pass=all_pass,
+            labels=labels,
+            step_descriptions=step_descriptions,
+            results=results,
+            details=details,
+            run_mode=run_mode,
+            db_dump_result=db_dump_result,
+            step8_result=step8_result,
+            step9_result=step9_result,
+        )
+
+        bundle_result = export_report_bundle(
+            os.path.dirname(os.path.abspath(__file__)),
+            report_filename,
+            structured_payload,
+        )
+        if bundle_result.success:
+            print(f"  [⚛️ 정적 보고서 갱신] 03.FinalReport/{report_filename}")
+            print(f"  [🧾 구조화 데이터] 03.FinalReport/data/{os.path.splitext(report_filename)[0]}.json")
+            print(f"  [🗂️ Manifest 갱신] 03.FinalReport/data/{bundle_result.manifest_path.name}")
+            if bundle_result.pdf_path.exists():
+                print(f"  [📕 PDF 보고서 생성] 03.FinalReport/{bundle_result.pdf_path.name}")
+        else:
+            warn(
+                f"Hybrid report pipeline fallback activated: {bundle_result.stderr or bundle_result.stdout or 'renderer unavailable'}"
+            )
+            info(f"Manifest updated: 03.FinalReport/data/{bundle_result.manifest_path.name}")
+    except Exception as e:
+        warn(f"Structured report export skipped: {e}")
 
     print()
 

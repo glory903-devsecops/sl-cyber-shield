@@ -1,0 +1,91 @@
+{
+  "slug": "sample-main-report",
+  "meta": {
+    "title": "SL Cyber-Shield Main Exploit Chain",
+    "subtitle": "JSON -> React Static Export -> HTML/PDF workflow sample",
+    "badge": "Submission-safe fixed artifact",
+    "generatedAt": "2026-04-04 14:00:00",
+    "classification": "Hybrid report pipeline"
+  },
+  "summary": {
+    "overview": "구조화된 증적 데이터를 정적 HTML과 PDF로 함께 만들어 제출용 링크와 보존용 문서를 동시에 관리하는 샘플 보고서입니다.",
+    "items": [
+      {
+        "label": "Target Endpoint",
+        "value": "http://localhost:8011/spring-form/login"
+      },
+      {
+        "label": "Scenario Scope",
+        "value": "External Exploit Chain"
+      },
+      {
+        "label": "Bundle Output",
+        "value": "JSON + HTML + PDF"
+      },
+      {
+        "label": "Delivery Status",
+        "value": "Static export only"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "label": "Primary Artifact",
+      "value": "HTML report for GitHub Pages"
+    },
+    {
+      "label": "Archive Artifact",
+      "value": "Printable PDF snapshot"
+    },
+    {
+      "label": "Source of Truth",
+      "value": "Structured JSON payload"
+    }
+  ],
+  "sections": [
+    {
+      "id": "step1",
+      "step": "Step 1",
+      "title": "Payload Transmission",
+      "description": "Spring4Shell 취약점 경로로 악성 페이로드를 전송한 결과를 구조화해서 보존합니다.",
+      "status": "success",
+      "severity": "high",
+      "evidence": {
+        "kind": "text",
+        "content": "POST /spring-form/login\\nStatus: 200\\nResult: payload delivered"
+      }
+    },
+    {
+      "id": "step2",
+      "step": "Step 2",
+      "title": "Credential Harvesting",
+      "description": "설정 파일과 런타임 환경에서 민감 정보를 추출한 증적을 HTML fragment로 표현할 수 있습니다.",
+      "status": "success",
+      "severity": "critical",
+      "evidence": {
+        "kind": "html",
+        "content": "<p><strong>Extracted configuration:</strong></p><pre>spring.datasource.url=jdbc:mysql://spring-db:3306/sl_db\\nspring.datasource.username=sl_admin</pre>"
+      }
+    },
+    {
+      "id": "step3",
+      "step": "Step 3",
+      "title": "Fixed Artifact Delivery",
+      "description": "데모에는 빌드된 HTML만 배포하고, PDF는 제출용 보존 사본으로 함께 생성합니다.",
+      "status": "success",
+      "severity": "medium",
+      "evidence": {
+        "kind": "list",
+        "items": [
+          "GitHub Pages에는 정적 HTML만 업로드",
+          "동일 basename의 PDF를 함께 생성",
+          "JSON은 재생성 가능한 근거 데이터로 저장"
+        ]
+      }
+    }
+  ],
+  "footer": {
+    "body": "SL Factory Innovation Team hybrid report pipeline sample.",
+    "note": "React static export and PDF generation run locally before sharing the demo."
+  }
+}
