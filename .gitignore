@@ -1,4 +1,6 @@
 report_*.html
+node_modules/
+reporting/generated/
 *.zip
 01.TestServer/*_db/
 01.TestServer/*_data/

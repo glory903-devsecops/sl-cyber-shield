@@ -1,0 +1,15 @@
+{
+  "name": "sl-cyber-shield-reporting",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "reports:build": "node reporting/scripts/build-report.mjs",
+    "reports:sample": "node reporting/scripts/build-report.mjs --input reporting/fixtures/sample-main-report.json --output-dir /tmp/sl-cyber-shield-sample"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

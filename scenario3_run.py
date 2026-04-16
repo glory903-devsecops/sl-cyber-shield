@@ -4,6 +4,9 @@ import time
 import datetime
 import subprocess
 
+from src.application.report_bundle import export_report_bundle
+from src.application.report_payloads import build_advanced_report_payload
+
 # Scenario 3: Spring4Shell Polymorphic Payload & Patch Bypass (Watering Hole)
 # Logic based on 서브시나리오2.md
 
@@ -79,6 +82,21 @@ def generate_report(results):
     
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(html_content)
+
+    structured_payload = build_advanced_report_payload(
+        report_filename=filename,
+        current_time=current_time,
+    )
+
+    bundle_result = export_report_bundle(os.path.dirname(os.path.abspath(__file__)), filename, structured_payload)
+    if bundle_result.success:
+        info(f"Manifest Updated: {bundle_result.manifest_path}")
+        if bundle_result.pdf_path.exists():
+            info(f"Structured PDF Generated: {bundle_result.pdf_path}")
+        return str(bundle_result.html_path)
+
+    warn(f"Hybrid report pipeline fallback activated: {bundle_result.stderr or bundle_result.stdout or 'renderer unavailable'}")
+    info(f"Manifest Updated: {bundle_result.manifest_path}")
     
     return filepath
 

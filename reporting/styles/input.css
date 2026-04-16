@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: "Avenir Next", "Pretendard", "Segoe UI", sans-serif;
+  }
+
+  code,
+  pre {
+    font-family: "SFMono-Regular", "JetBrains Mono", "Menlo", monospace;
+  }
+}

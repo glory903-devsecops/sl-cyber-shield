@@ -1,0 +1,582 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --ink-strong: #f6efe5;
+    --ink-soft: #d2cbc2;
+    --ink-muted: #8d8a83;
+    --line-soft: rgba(246, 239, 229, 0.1);
+    --line-strong: rgba(246, 239, 229, 0.18);
+    --surface-base: #07111f;
+    --surface-elevated: rgba(8, 18, 34, 0.9);
+    --surface-panel: rgba(13, 26, 47, 0.74);
+    --surface-accent: rgba(41, 83, 136, 0.18);
+    --brand-deep: #16365f;
+    --brand-main: #2f79c6;
+    --brand-bright: #73d4ff;
+    --brand-alert: #ff8d57;
+    --brand-safe: #66d6a8;
+    --shadow-main: 0 32px 80px rgba(0, 0, 0, 0.35);
+    --radius-xl: 28px;
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --content-width: 1180px;
+    --hero-glow:
+        radial-gradient(circle at 18% 20%, rgba(115, 212, 255, 0.2) 0%, transparent 32%),
+        radial-gradient(circle at 82% 18%, rgba(255, 141, 87, 0.16) 0%, transparent 28%),
+        radial-gradient(circle at 50% 86%, rgba(47, 121, 198, 0.18) 0%, transparent 40%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    color: var(--ink-strong);
+    font-family: "Avenir Next", "Pretendard", "Segoe UI", sans-serif;
+    background:
+        linear-gradient(180deg, rgba(7, 17, 31, 0.7) 0%, rgba(7, 17, 31, 1) 28%),
+        linear-gradient(135deg, #081121 0%, #101d33 48%, #06101a 100%);
+    min-height: 100vh;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: var(--hero-glow);
+    opacity: 0.95;
+    z-index: -2;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.24;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 90%);
+}
+
+a {
+    color: inherit;
+}
+
+.page-shell {
+    position: relative;
+    overflow: hidden;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(16px);
+    background: rgba(7, 17, 31, 0.72);
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.topbar__inner,
+.hero,
+.section,
+.footer {
+    width: min(calc(100% - 32px), var(--content-width));
+    margin: 0 auto;
+}
+
+.topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 0;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(115, 212, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(115, 212, 255, 0.08);
+    color: var(--brand-bright);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.brand-lockup {
+    display: grid;
+    gap: 4px;
+}
+
+.brand-lockup__title {
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.brand-lockup__meta {
+    color: var(--ink-muted);
+    font-size: 0.84rem;
+}
+
+.chip-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.chip-link:hover,
+.chip-link:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(115, 212, 255, 0.32);
+    background: rgba(115, 212, 255, 0.12);
+    outline: none;
+}
+
+.hero {
+    padding: 82px 0 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+    gap: 28px;
+    align-items: stretch;
+}
+
+.hero__panel,
+.hero__summary,
+.surface-card,
+.stat-card,
+.report-card,
+.timeline-card,
+.status-card {
+    border: 1px solid var(--line-soft);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+    box-shadow: var(--shadow-main);
+    backdrop-filter: blur(12px);
+}
+
+.hero__panel {
+    padding: 36px;
+    border-radius: var(--radius-xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero__panel::before {
+    content: "";
+    position: absolute;
+    inset: auto 10% -20% 40%;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(115, 212, 255, 0.18), transparent 70%);
+}
+
+.hero__title {
+    margin: 18px 0 18px;
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4.8rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    white-space: pre-line;
+}
+
+.hero__lead {
+    max-width: 54ch;
+    margin: 0 0 28px;
+    color: var(--ink-soft);
+    font-size: 1.08rem;
+    line-height: 1.7;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.button--primary {
+    color: #05101c;
+    background: linear-gradient(135deg, #ffe4a8 0%, #ff9b6d 100%);
+    box-shadow: 0 18px 34px rgba(255, 155, 109, 0.22);
+}
+
+.button--secondary {
+    color: var(--ink-strong);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line-strong);
+}
+
+.hero__highlights {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.stat-card {
+    padding: 18px;
+    border-radius: var(--radius-md);
+}
+
+.stat-card__label {
+    color: var(--ink-muted);
+    font-size: 0.84rem;
+}
+
+.stat-card__value {
+    margin-top: 10px;
+    font-size: 1.55rem;
+    font-weight: 700;
+}
+
+.hero__summary {
+    padding: 28px;
+    border-radius: var(--radius-xl);
+    display: grid;
+    gap: 18px;
+    align-content: start;
+}
+
+.hero__summary-title {
+    margin: 0;
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: 1.48rem;
+}
+
+.hero__summary-copy {
+    margin: 0;
+    color: var(--ink-soft);
+    line-height: 1.65;
+}
+
+.status-list,
+.timeline-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.status-card,
+.timeline-card {
+    padding: 18px;
+    border-radius: var(--radius-md);
+}
+
+.status-card__title,
+.timeline-card__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.status-card__body,
+.timeline-card__body {
+    margin: 10px 0 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.badge--safe {
+    color: #daf9e7;
+    background: rgba(102, 214, 168, 0.14);
+}
+
+.badge--focus {
+    color: #d9f5ff;
+    background: rgba(115, 212, 255, 0.12);
+}
+
+.section {
+    padding: 22px 0 36px;
+}
+
+.section__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.section__eyebrow {
+    color: var(--brand-bright);
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.section__title {
+    margin: 0;
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+}
+
+.section__copy {
+    max-width: 62ch;
+    margin: 10px 0 0;
+    color: var(--ink-soft);
+    line-height: 1.7;
+}
+
+.reports-grid,
+.systems-grid,
+.timeline-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.reports-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.systems-grid,
+.timeline-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.report-card,
+.surface-card {
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.report-card::before,
+.surface-card::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -40px auto;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(115, 212, 255, 0.12), transparent 70%);
+}
+
+.report-card:hover,
+.report-card:focus-visible,
+.surface-card:hover,
+.surface-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgba(115, 212, 255, 0.32);
+    outline: none;
+}
+
+.report-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 26px;
+}
+
+.report-card__icon {
+    font-size: 1.5rem;
+}
+
+.report-card__title,
+.surface-card__title {
+    margin: 0;
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: 1.34rem;
+}
+
+.report-card__desc,
+.surface-card__copy {
+    margin: 12px 0 20px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+}
+
+.report-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--ink-muted);
+    font-size: 0.88rem;
+}
+
+.surface-card__list {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--ink-soft);
+}
+
+.surface-card__list li {
+    position: relative;
+    padding-left: 16px;
+}
+
+.surface-card__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand-bright);
+}
+
+.footer {
+    padding: 28px 0 64px;
+}
+
+.footer__panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.footer__copy {
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+.empty-state {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 16px;
+}
+
+.empty-state__panel {
+    width: min(100%, 720px);
+    padding: 36px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: var(--shadow-main);
+}
+
+.empty-state__code {
+    margin: 0 0 12px;
+    color: var(--brand-bright);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.empty-state__title {
+    margin: 0 0 14px;
+    font-family: "Outfit", "Avenir Next", sans-serif;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.empty-state__copy {
+    margin: 0 0 24px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+}
+
+@media (max-width: 1040px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-grid,
+    .systems-grid,
+    .timeline-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .topbar__inner {
+        align-items: start;
+        flex-direction: column;
+    }
+
+    .hero {
+        padding-top: 56px;
+    }
+
+    .hero__panel,
+    .hero__summary,
+    .report-card,
+    .surface-card {
+        padding: 22px;
+    }
+
+    .hero__highlights {
+        grid-template-columns: 1fr;
+    }
+
+    .button,
+    .chip-link {
+        width: 100%;
+    }
+
+    .footer__panel {
+        padding: 18px;
+    }
+}
